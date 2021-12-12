@@ -1,0 +1,9 @@
+.eslintrc.js
+@devops/**/*.config.js
+node_modules
+build
+
+packages/**/lib
+packages/**/build
+packages/**/.eslintrc.js
+packages/**/*.config.js

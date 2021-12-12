@@ -1,0 +1,71 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  margin: 0;
+  font-size: 14px;
+  padding: 10px;
+}
+
+canvas {
+  user-select: none;
+  border: 1px solid #6c6cff;
+}
+
+.logger {
+  width: 100%;
+  flex-grow: 1;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #cacdd1;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.log-item {
+  padding: 4px 6px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  position: relative;
+}
+.log-item::before,
+.log-item::after {
+  content: '';
+  height: 1px;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.log-item::before {
+  top: -1px;
+}
+.log-item::after {
+  bottom: -1px;
+}
+.log {
+  color: #000;
+}
+.log::before,
+.log::after {
+  background: #f0f0f0;
+}
+.warn {
+  background: #fffbe5;
+  color: #5c3c00;
+}
+.warn::before,
+.warn::after {
+  background: #fff5c2;
+}
+.error {
+  background: #fff0f0;
+  color: #ff0000;
+}
+.error::before,
+.error::after {
+  background: #ffd6d6;
+}

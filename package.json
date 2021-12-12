@@ -1,0 +1,55 @@
+{
+  "name": "@ambrozy/soliter-solver-js-tf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "npm-p build:*",
+    "start:train": "yarn workspace @ambrozy/train start",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "autoprefixer": "^10.4.0",
+    "css-loader": "^6.5.1",
+    "eslint": "^8.3.0",
+    "eslint-config-airbnb": "^19.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-compat": "^4.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-webpack-plugin": "^3.1.1",
+    "fork-ts-checker-webpack-plugin": "^6.4.2",
+    "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.3.1",
+    "npm-run-all": "^4.1.5",
+    "null-loader": "^4.0.1",
+    "postcss": "^8.3.11",
+    "postcss-loader": "^6.2.0",
+    "postcss-nested": "^5.0.6",
+    "prettier": "^2.4.1",
+    "prettier-eslint": "^13.0.0",
+    "style-loader": "^3.3.1",
+    "ts-jest": "^27.0.7",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.2",
+    "webpack": "^5.64.2",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.5.0",
+    "webpack-merge": "^5.8.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "jest": {
+    "preset": "ts-jest"
+  }
+}

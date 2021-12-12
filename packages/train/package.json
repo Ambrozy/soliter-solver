@@ -1,0 +1,29 @@
+{
+  "name": "@ambrozy/train",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "start": "webpack serve --config webpack.web.config.js --open"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^3.11.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.177",
+    "jest": "^27.3.1",
+    "ts-node": "^10.4.0",
+    "webpack": "^5.64.2",
+    "webpack-merge": "^5.8.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11"
+  ],
+  "jest": {
+    "preset": "ts-jest"
+  }
+}
