@@ -26,6 +26,7 @@ module.exports = {
 		'no-plusplus': 'off',
 		'no-shadow': 'off',
 		'no-use-before-define': 'error',
+		'no-constant-condition': 'off',
 		'import/no-duplicates': 'error',
 		'import/no-cycle': 'error',
 		'import/no-extraneous-dependencies': 'error',
@@ -62,12 +63,6 @@ module.exports = {
 		],
         'comma-dangle': ['error', 'always-multiline'],
 		'arrow-body-style': ['error', 'as-needed'],
-		'padding-line-between-statements': [
-			'error',
-			{ blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
-			{ blankLine: 'any', prev: ['const', 'let', 'var'], next: ['const', 'let', 'var'] },
-			{ blankLine: 'any', prev: '*', next: 'return' },
-		],
     },
 	globals: {
 		describe: true,
