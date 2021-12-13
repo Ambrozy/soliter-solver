@@ -1,7 +1,16 @@
 import { Tensor, SymbolicTensor } from '@tensorflow/tfjs';
 
 export * as tf from '@tensorflow/tfjs';
-export type { Shape, LayersModel, Rank, Tensor, Tensor1D, Tensor2D, Tensor3D } from '@tensorflow/tfjs';
+export type {
+    Shape,
+    LayersModel,
+    Rank,
+    Tensor,
+    Tensor1D,
+    Tensor2D,
+    Tensor3D,
+    ModelFitArgs,
+} from '@tensorflow/tfjs';
 export type ActivationIdentifier =
     | 'elu'
     | 'hardSigmoid'

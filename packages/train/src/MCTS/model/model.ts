@@ -6,6 +6,7 @@ export const predictReward = (model: LayersModel, boards: Board[][], steps: numb
     const batch = prepareBatch(boards, steps);
 
     console.log(model);
+    // model.predict(batch);
     // TODO: add number extraction from model results
     return batch.map(() => Math.random() + steps);
 };
