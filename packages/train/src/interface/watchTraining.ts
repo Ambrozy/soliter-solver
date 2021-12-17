@@ -1,27 +1,23 @@
-import * as tf from '@tensorflow/tfjs';
+import { TrainLog } from '../MCTS/train';
 import * as tfvis from '@tensorflow/tfjs-vis';
-import { LayersModel, ModelFitArgs } from '../MCTS/model/tf';
 
-async function train(model: LayersModel, fitCallbacks: ModelFitArgs['callbacks']) {
-    const xs = tf.tensor2d([1, 2, 3, 4], [4, 1]);
-    const ys = tf.tensor2d([1, 3, 5, 7], [4, 1]);
-
-    return model.fit(xs, ys, {
-        epochs: 10,
-        callbacks: fitCallbacks,
-    });
-}
-
-export async function watchTraining(model: LayersModel) {
-    const metrics = ['loss', 'val_loss', 'acc', 'val_acc'];
-    const container = {
-        name: 'Model training process',
+export const drawTrainLog = async (log: TrainLog) => {
+    const surface = {
+        name: 'Loss function',
         tab: 'Training',
-        styles: {
-            height: '1000px',
-        },
     };
-    const callbacks = tfvis.show.fitCallbacks(container, metrics);
+    const options = {
+        xLabel: 'Epoch',
+        yLabel: 'Value',
+    };
+    const logLoss = log.loss.map((loss, i) => ({
+        x: i,
+        y: loss,
+    }));
+    const data = {
+        values: [logLoss],
+        series: ['Loss'],
+    };
 
-    return train(model, callbacks);
-}
+    await tfvis.render.linechart(surface, data, options);
+};

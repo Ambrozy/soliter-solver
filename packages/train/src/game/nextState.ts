@@ -40,6 +40,14 @@ const nextStatePlace = (board: Board, from: [number, number]): Board => {
 export const nextState = (board: Board, move: Move): Board => {
     const [from, to] = move;
 
+    if (from[0] === to[0]) {
+        console.log(
+            board.layout[from[0] as number][from[1]],
+            board.layout[to[0] as number][to[1] as number],
+        );
+        return board;
+    }
+
     if (to === BIN) {
         return nextStateBin(board, from);
     }

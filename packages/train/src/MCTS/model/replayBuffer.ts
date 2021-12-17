@@ -1,7 +1,8 @@
 import maxBy from 'lodash/maxBy';
 
 import { force, randomInteger } from '../../utils';
-import { Episode, X, Y } from './types';
+import { tf } from './tf';
+import { Episode } from './types';
 import { prepareBoardX, toTfxBatch, toTfyBatch } from './utils';
 
 type DataItem = {
@@ -14,11 +15,20 @@ export class ReplayBuffer {
     length: number;
     batchSize: number;
     minPeriod: number;
+    maxPeriod: number;
 
-    constructor(length: number, batchSize: number, minPeriod: number) {
+    constructor(length: number, batchSize: number, minPeriod: number, maxPeriod: number) {
         this.length = length;
         this.batchSize = batchSize;
         this.minPeriod = minPeriod;
+        this.maxPeriod = maxPeriod;
+    }
+
+    count() {
+        return {
+            episodes: this.#data.length,
+            steps: this.#data.reduce((sum, episode) => sum + episode.episode.length, 0),
+        };
     }
 
     push(episode: Episode) {
@@ -40,7 +50,7 @@ export class ReplayBuffer {
         const randomIndex = randomInteger(this.minPeriod, stepCount - this.minPeriod);
         const episodeSlice =
             stepCount > this.minPeriod
-                ? dataItem.episode.slice(randomIndex)
+                ? dataItem.episode.slice(randomIndex, randomIndex + this.maxPeriod)
                 : dataItem.episode;
         const episodeStart = episodeSlice[0];
         const episodeScores = episodeSlice.map((step) => step.score);
@@ -58,7 +68,7 @@ export class ReplayBuffer {
     *[Symbol.iterator]() {
         let index = 0;
 
-        while (index < this.length) {
+        while (index < this.#data.length) {
             const batchBoardX: number[][][][] = [];
             const batchStepsX: number[][] = [];
             const batchY: number[][] = [];
@@ -72,7 +82,13 @@ export class ReplayBuffer {
             });
             index++;
 
-            yield [toTfxBatch(batchBoardX, batchStepsX), toTfyBatch(batchY)] as [X, Y];
+            yield { xs: toTfxBatch(batchBoardX, batchStepsX), ys: toTfyBatch(batchY) };
         }
+    }
+
+    getDataset() {
+        const iterator = this[Symbol.iterator].bind(this);
+
+        return tf.data.generator(iterator);
     }
 }

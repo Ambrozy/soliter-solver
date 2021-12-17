@@ -38,10 +38,12 @@ export const possibleMoves = (board: Board): Move[] => {
 
                 // to layout
                 const columnIndexes = getCompatibleIndexes(lastCards, card);
-                const layoutMoves = columnIndexes.map((toColumnIndex) => [
-                    from,
-                    [toColumnIndex, lastIndexes[toColumnIndex]],
-                ]);
+                const layoutMoves = columnIndexes
+                    .filter((toColumnIndex) => toColumnIndex !== fromColumnIndex)
+                    .map((toColumnIndex) => [
+                        from,
+                        [toColumnIndex, lastIndexes[toColumnIndex]],
+                    ]);
                 moves.push(...(layoutMoves as Move[]));
 
                 // to place

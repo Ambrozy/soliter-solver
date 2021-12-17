@@ -6,9 +6,9 @@ import {
     possibleMoves,
     randomBoard,
 } from '../game';
-import { sample, scoreToProbabilities } from '../utils';
+import { asyncLoop, sample, scoreToProbabilities } from '../utils';
 
-import { predictReward, Episode, LayersModel } from './model';
+import { predictReward, LayersModel, Episode } from './model';
 import { getBoardScore } from './score';
 
 const processOneMove = (model: LayersModel, board: Board, steps: number) => {
@@ -31,31 +31,34 @@ const processOneMove = (model: LayersModel, board: Board, steps: number) => {
     return { score: 0, bestMove: moveToString(board, NONE_MOVE), nextBoard: board };
 };
 
-export const playEpisode = (model: LayersModel, stepsLimit: number) => {
+export const playEpisode = async (
+    model: LayersModel,
+    stepsLimit: number,
+    verbose = false,
+): Promise<Episode> => {
     let board = randomBoard();
-    const stepHistory = [];
-    const episodeTape: Episode = [];
+    const stepHistory: string[] = [];
 
-    for (let steps = stepsLimit; steps > 0; steps--) {
+    return await asyncLoop(stepsLimit, 0, (steps) => {
         const { score, bestMove, nextBoard } = processOneMove(model, board, steps);
+        const result = { board, nextBoard, score };
 
         if (score === 0) {
-            break;
+            return Promise.reject();
         }
 
         stepHistory.push(bestMove);
-        episodeTape.push({
-            board,
-            nextBoard,
-            score,
-        });
         board = nextBoard;
-        console.log(
-            `[${stepsLimit - steps}] Best move is ${stepHistory.at(
-                -1,
-            )}, score is ${score}`,
-        );
-    }
 
-    return episodeTape;
+        if (verbose) {
+            console.log(
+                `[${stepsLimit - steps}] Best move is ${stepHistory.at(
+                    -1,
+                )}, score is ${score}`,
+            );
+        }
+
+        // eslint-disable-next-line compat/compat
+        return Promise.resolve(result);
+    });
 };

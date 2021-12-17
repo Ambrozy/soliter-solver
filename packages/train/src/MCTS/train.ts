@@ -1,36 +1,64 @@
+import { asyncLoop } from '../utils';
 import { playEpisode } from './playEpisode';
 import { LayersModel, ReplayBuffer } from './model';
 
+export interface TrainLog {
+    loss: number[];
+}
+
 interface TrainProps {
     epochs: number;
-    episodes_per_epoch: number;
-    epochs_per_epoch: number;
+    episodesPerEpoch: number;
+    epochsPerEpoch: number;
     stepsLimit: number;
+    verbose: number;
+    onEpochEnd: (epoch: number, log: TrainLog) => void;
 }
 
 const defaultProps: TrainProps = {
     epochs: 10,
-    episodes_per_epoch: 10,
-    epochs_per_epoch: 1,
+    episodesPerEpoch: 10,
+    epochsPerEpoch: 1,
     stepsLimit: 150,
+    verbose: 1,
+    onEpochEnd: () => undefined,
 };
 
-export const trainNEpoch = (
+const fillReplayBuffer = async (
     model: LayersModel,
     replayBuffer: ReplayBuffer,
-    innerProps: TrainProps,
+    props: TrainProps,
 ) => {
-    const props = { ...innerProps, ...defaultProps };
+    await asyncLoop(0, props.episodesPerEpoch, async () => {
+        const episode = await playEpisode(model, props.stepsLimit);
+        replayBuffer.push(episode);
+    });
+};
+
+export const trainNEpoch = async (
+    model: LayersModel,
+    replayBuffer: ReplayBuffer,
+    innerProps?: Partial<TrainProps>,
+) => {
+    const props = { ...defaultProps, ...innerProps };
+    const log: TrainLog = {
+        loss: [],
+    };
 
     for (const epoch of Array(props.epochs).keys()) {
-        // fill replay buffer
-        for (const _ of Array(props.episodes_per_epoch).keys()) {
-            const episode = playEpisode(model, props.stepsLimit);
-            replayBuffer.push(episode);
-        }
+        await fillReplayBuffer(model, replayBuffer, props);
+
         // train on replays
-        // TODO: history = model.fit(epochs=props.epochs_per_epoch);
-        const loss = 0;
-        console.log(`[${epoch + 1}] loss=${loss}`);
+        const history = await model.fitDataset(replayBuffer.getDataset(), {
+            epochs: props.epochsPerEpoch,
+        });
+        const loss = history.history.loss.at(-1);
+
+        log.loss.push(loss as number);
+        props.onEpochEnd(epoch + 1, log);
+
+        if (props.verbose) {
+            console.log(`[${epoch + 1}] loss=${loss}`, typeof loss);
+        }
     }
 };

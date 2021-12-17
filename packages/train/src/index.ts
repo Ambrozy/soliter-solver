@@ -6,8 +6,11 @@ import {
     initToggleBackendButton,
     togglePanel,
     initTogglePanelButton,
+    drawTrainLog,
+    showPanel,
 } from './interface';
-import { createModel, xShape, playEpisode } from './MCTS';
+import { createModel, xShape, ReplayBuffer } from './MCTS';
+import { trainNEpoch } from './MCTS/train';
 
 import './index.scss';
 
@@ -24,11 +27,11 @@ type ExtWindow = typeof window & {
 // model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 // model.compile({ loss: 'meanSquaredError', optimizer: 'sgd' });
 
+const model = createModel(xShape);
+const replayBuffer = new ReplayBuffer(10, 32, 1, 10);
+model.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+
 window.onload = async () => {
-    console.log('onLoad');
-
-    const model = createModel(xShape);
-
     await toggleBackend();
     await togglePanel();
     await showModel(model);
@@ -36,11 +39,21 @@ window.onload = async () => {
     document.querySelector('#backend').innerHTML = tf.getBackend();
     initToggleBackendButton();
     initTogglePanelButton();
-
-    const episode = playEpisode(model, 10);
-    console.log('episode', episode);
 };
 
-// document
-//     .querySelector('#train-model')
-//     .addEventListener('click', async () => watchTraining(model));
+document.querySelector('#train-model').addEventListener('click', async () => {
+    console.log('Train started');
+
+    await showPanel();
+    await drawTrainLog({ loss: [] });
+    await trainNEpoch(model, replayBuffer, {
+        epochs: 10,
+        episodesPerEpoch: 5,
+        epochsPerEpoch: 1,
+        stepsLimit: 150,
+        verbose: 1,
+        onEpochEnd: (_, log) => drawTrainLog(log),
+    });
+
+    console.log('Train ended');
+});
