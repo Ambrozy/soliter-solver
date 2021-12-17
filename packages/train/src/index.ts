@@ -1,8 +1,13 @@
 import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
-import { showModel } from './inference';
-
-import { createModel, oheLength } from './MCTS';
+import {
+    showModel,
+    toggleBackend,
+    initToggleBackendButton,
+    togglePanel,
+    initTogglePanelButton,
+} from './interface';
+import { createModel, xShape, playEpisode } from './MCTS';
 
 import './index.scss';
 
@@ -18,17 +23,24 @@ type ExtWindow = typeof window & {
 // const model = tf.sequential();
 // model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 // model.compile({ loss: 'meanSquaredError', optimizer: 'sgd' });
-const xBoardShape = [8, 46, oheLength];
-const model = createModel(xBoardShape);
 
-showModel(model);
+window.onload = async () => {
+    console.log('onLoad');
 
-document
-    .querySelector('#show-visor')
-    .addEventListener('click', async () => tfvis.visor().toggle());
+    const model = createModel(xShape);
+
+    await toggleBackend();
+    await togglePanel();
+    await showModel(model);
+
+    document.querySelector('#backend').innerHTML = tf.getBackend();
+    initToggleBackendButton();
+    initTogglePanelButton();
+
+    const episode = playEpisode(model, 10);
+    console.log('episode', episode);
+};
+
 // document
 //     .querySelector('#train-model')
 //     .addEventListener('click', async () => watchTraining(model));
-
-//
-// playEpisode(model, 200);

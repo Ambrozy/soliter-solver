@@ -1,5 +1,5 @@
 import { Board } from '../../game';
-import { Rank, Tensor } from './tf';
+import { Tensor4D, Tensor2D } from './tf';
 
 export type Episode = Array<{
     board: Board;
@@ -7,5 +7,5 @@ export type Episode = Array<{
     score: number;
 }>;
 
-export type X = [Tensor<Rank.R3>, number];
-export type Y = number;
+export type X = [Tensor4D, Tensor2D];
+export type Y = Tensor2D;

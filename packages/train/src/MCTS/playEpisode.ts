@@ -1,5 +1,11 @@
-import { randomBoard } from '../game/randomBoard';
-import { Board, moveToString, nextState, NONE_MOVE, possibleMoves } from '../game';
+import {
+    Board,
+    moveToString,
+    nextState,
+    NONE_MOVE,
+    possibleMoves,
+    randomBoard,
+} from '../game';
 import { sample, scoreToProbabilities } from '../utils';
 
 import { predictReward, Episode, LayersModel } from './model';
@@ -26,18 +32,13 @@ const processOneMove = (model: LayersModel, board: Board, steps: number) => {
 };
 
 export const playEpisode = (model: LayersModel, stepsLimit: number) => {
-    console.log('Start');
-
     let board = randomBoard();
-    console.log('Initial board: ', board);
     const stepHistory = [];
     const episodeTape: Episode = [];
-    let finalScore = 0;
 
     for (let steps = stepsLimit; steps > 0; steps--) {
         const { score, bestMove, nextBoard } = processOneMove(model, board, steps);
 
-        finalScore = score;
         if (score === 0) {
             break;
         }
@@ -55,8 +56,6 @@ export const playEpisode = (model: LayersModel, stepsLimit: number) => {
             )}, score is ${score}`,
         );
     }
-
-    console.log(`Finished with score: ${finalScore}. History: ${stepHistory.join(', ')}`);
 
     return episodeTape;
 };

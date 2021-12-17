@@ -4,11 +4,10 @@ import { prepareBatch } from './utils';
 
 export const predictReward = (model: LayersModel, boards: Board[][], steps: number) => {
     const batch = prepareBatch(boards, steps);
+    const predictions = model.predict(batch);
+    const predictionData = (predictions as Tensor).dataSync();
 
-    console.log(model);
-    // model.predict(batch);
-    // TODO: add number extraction from model results
-    return batch.map(() => Math.random() + steps);
+    return Array.from(predictionData);
 };
 
 const conv2d = (x: LayerOutput, numChannels: number, kernelSize: number, stride = 1) =>

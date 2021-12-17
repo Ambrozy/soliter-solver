@@ -9,6 +9,7 @@ export type {
     Tensor1D,
     Tensor2D,
     Tensor3D,
+    Tensor4D,
     ModelFitArgs,
 } from '@tensorflow/tfjs';
 export type ActivationIdentifier =

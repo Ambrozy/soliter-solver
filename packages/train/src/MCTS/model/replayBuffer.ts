@@ -2,7 +2,7 @@ import maxBy from 'lodash/maxBy';
 
 import { force, randomInteger } from '../../utils';
 import { Episode, X, Y } from './types';
-import { prepareBoardX } from './utils';
+import { prepareBoardX, toTfxBatch, toTfyBatch } from './utils';
 
 type DataItem = {
     episode: Episode;
@@ -30,7 +30,11 @@ export class ReplayBuffer {
         }
     }
 
-    #getRandomPeriod(index: number): { x: X; y: Y } {
+    #getRandomPeriod(index: number): {
+        boardX: number[][][];
+        stepsX: number[];
+        y: number[];
+    } {
         const dataItem = this.#data[index];
         const stepCount = dataItem.episode.length;
         const randomIndex = randomInteger(this.minPeriod, stepCount - this.minPeriod);
@@ -45,8 +49,9 @@ export class ReplayBuffer {
         const length = maximumIndex - randomIndex;
 
         return {
-            x: [prepareBoardX(episodeStart.board, episodeStart.nextBoard), length],
-            y: maximumScore,
+            boardX: prepareBoardX(episodeStart.board, episodeStart.nextBoard),
+            stepsX: [length],
+            y: [maximumScore],
         };
     }
 
@@ -54,18 +59,20 @@ export class ReplayBuffer {
         let index = 0;
 
         while (index < this.length) {
-            const batch_x: X[] = [];
-            const batch_y: Y[] = [];
+            const batchBoardX: number[][][][] = [];
+            const batchStepsX: number[][] = [];
+            const batchY: number[][] = [];
 
             Array.from(Array(this.batchSize)).forEach(() => {
                 const period = this.#getRandomPeriod(index);
 
-                batch_x.push(period.x);
-                batch_y.push(period.y);
+                batchBoardX.push(period.boardX);
+                batchStepsX.push(period.stepsX);
+                batchY.push(period.y);
             });
             index++;
 
-            yield [batch_x, batch_y];
+            yield [toTfxBatch(batchBoardX, batchStepsX), toTfyBatch(batchY)] as [X, Y];
         }
     }
 }
