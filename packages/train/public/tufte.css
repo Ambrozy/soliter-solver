@@ -11,7 +11,7 @@ html {
 }
 
 body {
-    width: calc(87.5% - 550px);
+    width: 87.5%;
     margin-left: auto;
     margin-right: auto;
     padding-left: 12.5%;
@@ -47,6 +47,10 @@ h3 {
     margin-top: 2rem;
     margin-bottom: 1.4rem;
     line-height: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    width: 55%;
 }
 
 hr {

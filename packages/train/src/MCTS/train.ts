@@ -6,12 +6,20 @@ export interface TrainLog {
     loss: number[];
 }
 
+export interface ReplayBufferLog {
+    episodes: number;
+    steps: number;
+}
+
 interface TrainProps {
     epochs: number;
     episodesPerEpoch: number;
     epochsPerEpoch: number;
     stepsLimit: number;
     verbose: number;
+    onTrainStart: () => void;
+    onTrainEnd: () => void;
+    onReplayBufferEnd: (epoch: number, log: ReplayBufferLog) => void;
     onEpochEnd: (epoch: number, log: TrainLog) => void;
 }
 
@@ -21,6 +29,9 @@ const defaultProps: TrainProps = {
     epochsPerEpoch: 1,
     stepsLimit: 150,
     verbose: 1,
+    onTrainStart: () => undefined,
+    onTrainEnd: () => undefined,
+    onReplayBufferEnd: () => undefined,
     onEpochEnd: () => undefined,
 };
 
@@ -45,8 +56,10 @@ export const trainNEpoch = async (
         loss: [],
     };
 
+    props.onTrainStart();
     for (const epoch of Array(props.epochs).keys()) {
         await fillReplayBuffer(model, replayBuffer, props);
+        props.onReplayBufferEnd(epoch, replayBuffer.count());
 
         // train on replays
         const history = await model.fitDataset(replayBuffer.getDataset(), {
@@ -58,7 +71,8 @@ export const trainNEpoch = async (
         props.onEpochEnd(epoch + 1, log);
 
         if (props.verbose) {
-            console.log(`[${epoch + 1}] loss=${loss}`, typeof loss);
+            console.log(`[${epoch + 1}] loss=${loss}`);
         }
     }
+    props.onTrainEnd();
 };

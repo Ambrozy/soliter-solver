@@ -1,18 +1,22 @@
 import { tf } from '../MCTS';
 
-const backends = ['cpu', 'webgl'];
-let backendIndex = 1;
-const template = () => `Toggle backend to ${backends[backendIndex]}`;
+let isCPU = false;
+const template = () => `Toggle backend to ${isCPU ? 'webgl' : 'cpu'}`;
 let button: HTMLDivElement;
+let title: HTMLDivElement;
 
 export const toggleBackend = async () => {
-    backendIndex = (backendIndex + 1) % 2;
-    await tf.setBackend(backends[backendIndex]);
+    isCPU = !isCPU;
+    await tf.setBackend(isCPU ? 'cpu' : 'webgl');
     if (button) {
         button.innerHTML = template();
+        title.innerHTML = tf.getBackend();
     }
 };
 export const initToggleBackendButton = () => {
+    title = document.querySelector('#backend');
+    title.innerHTML = tf.getBackend();
+    isCPU = tf.getBackend() === 'cpu';
     button = document.querySelector('#toggle-backend');
     button.innerHTML = template();
     button.addEventListener('click', async () => {

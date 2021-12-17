@@ -13,18 +13,49 @@
         <p>
             Все данные о модели, данных и процесса обучения можно увидеть на панели логов.
         </p>
-        <button id='toggle-visor'>Переключить панель логов</button>
+        <button id="toggle-visor">Переключить панель логов</button>
         <p>
             Переключите бэкенд, если необходимо. Сейчас используется <span id="backend"></span>
         </p>
-        <button id='toggle-backend'>Переключить бэкенд</button>
+        <button id="toggle-backend">Переключить бэкенд</button>
+    </section>
+    <section>
+        <h2>Загрузка модели</h2>
+        <p>
+            Выберите 2 файла модели. JSON-файл с описанием структуры модели. И бинарный файл весов. Затем нажмите кнопку загрузки.
+        </p>
+        <div>
+            <input id="json-upload" type="file" accept=".json" />
+        </div>
+        <div>
+            <input id="weights-upload" type="file" accept=".weights.bin" />
+        </div>
+        <button id="load-model">Загрузить модель</button>
+        <div id="load-model-result"></div>
     </section>
     <section>
         <h2>Тренировка модели</h2>
         <p>
             Чтобы натренировать модель, нажмите кнопку ниже.
         </p>
-        <button id='train-model'>Обучить модель</button>
+        <button id="train-model">Обучить модель</button>
+        <p>
+            Прогресс тренировки:
+            <span class="train-progress">
+                <span id="train-progress-title">0 of 10</span>
+                <span class="train-progress-bar">
+                    <span id="train-progress-bar-inner"></span>
+                </span>
+            </span>
+            <span id="train-status"></span>
+        </p>
+    </section>
+    <section>
+        <h2>Скачивание модели</h2>
+        <p>
+            Будет скачено 2 файла: JSON-файл с описанием структуры модели и бинарный файл весов.
+        </p>
+        <button id="download-model">Скачать модель</button>
     </section>
 </article>
 </body>
