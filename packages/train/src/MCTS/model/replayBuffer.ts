@@ -46,12 +46,15 @@ export class ReplayBuffer {
         y: number[];
     } {
         const dataItem = this.#data[index];
-        const stepCount = dataItem.episode.length;
-        const randomIndex = randomInteger(this.minPeriod, stepCount - this.minPeriod);
+        const maxEndIndex = dataItem.episode.length - 2;
+        const randomIndex = randomInteger(this.minPeriod, maxEndIndex - this.minPeriod);
         const episodeSlice =
-            stepCount > this.minPeriod
-                ? dataItem.episode.slice(randomIndex, randomIndex + this.maxPeriod)
-                : dataItem.episode;
+            maxEndIndex + 1 > this.minPeriod
+                ? dataItem.episode.slice(
+                      randomIndex,
+                      Math.min(randomIndex + this.maxPeriod, maxEndIndex),
+                  )
+                : dataItem.episode.slice(0, maxEndIndex);
         const episodeStart = episodeSlice[0];
         const episodeScores = episodeSlice.map((step) => step.score);
         const maximumIndex = force(episodeScores);
@@ -74,11 +77,13 @@ export class ReplayBuffer {
             const batchY: number[][] = [];
 
             Array.from(Array(this.batchSize)).forEach(() => {
-                const period = this.#getRandomPeriod(index);
+                if (this.#data[index].episode.length > 1) {
+                    const period = this.#getRandomPeriod(index);
 
-                batchBoardX.push(period.boardX);
-                batchStepsX.push(period.stepsX);
-                batchY.push(period.y);
+                    batchBoardX.push(period.boardX);
+                    batchStepsX.push(period.stepsX);
+                    batchY.push(period.y);
+                }
             });
             index++;
 

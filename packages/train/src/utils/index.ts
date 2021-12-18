@@ -35,10 +35,10 @@ export const sample = (probabilities: number[]) => {
     return force(probabilities);
 };
 
-export const asyncLoop = <T extends object>(
+export const asyncLoop = <T>(
     start: number,
     end: number,
-    loopFunction: (index: number) => Promise<T | void>,
+    loopFunction: (index: number) => Promise<T>,
 ) => {
     const sign = Math.sign(end - start);
     const result: T[] = [];

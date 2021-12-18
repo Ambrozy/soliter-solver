@@ -7,9 +7,11 @@ import {
     initTogglePanelButton,
     drawTrainLog,
     showPanel,
+    initIO,
+    initEditor,
 } from './interface';
-import { createModel, xShape, ReplayBuffer } from './MCTS';
-import { trainNEpoch } from './MCTS/train';
+import { randomBoard } from './game';
+import { createModel, xShape, ReplayBuffer, solveEpisode, trainNEpoch } from './MCTS';
 
 import './index.scss';
 
@@ -21,11 +23,6 @@ type ExtWindow = typeof window & {
 (window as ExtWindow).tf = tf;
 (window as ExtWindow).tfvis = tfvis;
 
-// Define a model for linear regression.
-// const model = tf.sequential();
-// model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-// model.compile({ loss: 'meanSquaredError', optimizer: 'sgd' });
-
 let model = createModel(xShape);
 const replayBuffer = new ReplayBuffer(10, 32, 1, 10);
 
@@ -35,7 +32,35 @@ window.onload = async () => {
 
     initToggleBackendButton();
     initTogglePanelButton();
+    initIO(model, (loadedModel) => {
+        model = loadedModel;
+    });
+    initEditor();
 
+    document.querySelector('#inference-model').addEventListener('click', async () => {
+        const resultContainer = document.querySelector('#solver-result');
+        const boardLayout = document.querySelector(
+            '.prism-live textarea',
+        ) as HTMLInputElement;
+
+        resultContainer.innerHTML = 'Solving...';
+        const board = randomBoard();
+
+        try {
+            board.layout = JSON.parse(boardLayout.value);
+        } catch (_) {
+            resultContainer.innerHTML = 'Board layout is not readable. Check the syntax';
+            return;
+        }
+
+        const history = await solveEpisode(model, 150, board);
+        resultContainer.innerHTML = history
+            .join(', ')
+            .replace(/([0-9JQKA])p/g, '$1<span class="black">&#9824;</span>')
+            .replace(/([0-9JQKA])c/g, '$1<span class="red">&#9829;</span>')
+            .replace(/([0-9JQKA])k/g, '$1<span class="black">&#9827;</span>')
+            .replace(/([0-9JQKA])b/g, '$1<span class="red">&#9830;</span>');
+    });
     document.querySelector('#train-model').addEventListener('click', async (event) => {
         console.log('Train started');
 
@@ -78,26 +103,5 @@ window.onload = async () => {
         button.disabled = false;
 
         console.log('Train ended');
-    });
-
-    document.querySelector('#download-model').addEventListener('click', async () => {
-        await model.save('downloads://soliter-model');
-    });
-    document.querySelector('#load-model').addEventListener('click', async (event) => {
-        const jsonUpload = document.getElementById('json-upload') as HTMLInputElement;
-        const weightsUpload = document.getElementById(
-            'weights-upload',
-        ) as HTMLInputElement;
-        const button = event.currentTarget as HTMLButtonElement;
-        const result = document.getElementById('load-model-result');
-
-        button.disabled = true;
-        result.innerText = 'Loading...';
-        model = await tf.loadLayersModel(
-            tf.io.browserFiles([jsonUpload.files[0], weightsUpload.files[0]]),
-        );
-        await showModel(model);
-        button.disabled = false;
-        result.innerText = 'Loaded';
     });
 };

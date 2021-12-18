@@ -1,35 +1,8 @@
-import {
-    Board,
-    moveToString,
-    nextState,
-    NONE_MOVE,
-    possibleMoves,
-    randomBoard,
-} from '../game';
-import { asyncLoop, sample, scoreToProbabilities } from '../utils';
+import { randomBoard } from '../game';
+import { asyncLoop } from '../utils';
 
-import { predictReward, LayersModel, Episode } from './model';
-import { getBoardScore } from './score';
-
-const processOneMove = (model: LayersModel, board: Board, steps: number) => {
-    const moves = possibleMoves(board);
-
-    if (moves.length) {
-        const boards = moves.map((move) => [board, nextState(board, move)]);
-        const predications = predictReward(model, boards, steps);
-        const bestIndex = sample(scoreToProbabilities(predications));
-        const bestMove = moves[bestIndex];
-        const nextBoard = boards[bestIndex][1];
-
-        return {
-            score: getBoardScore(nextBoard),
-            bestMove: moveToString(board, bestMove),
-            nextBoard,
-        };
-    }
-
-    return { score: 0, bestMove: moveToString(board, NONE_MOVE), nextBoard: board };
-};
+import { LayersModel, Episode } from './model';
+import { processOneMove } from './processOneMove';
 
 export const playEpisode = async (
     model: LayersModel,

@@ -1,20 +1,44 @@
+html,
+body {
+  scrollbar-color: #768693 transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 6px;
+  background: #768693;
+}
+
 .train-progress {
   display: flex;
   align-items: center;
   width: 100%;
   max-width: 300px;
 }
+
 #train-progress-title {
   flex-shrink: 0;
   flex-grow: 0;
   margin-right: 10px;
 }
+
 .train-progress-bar {
   position: relative;
   height: 22px;
   flex-grow: 1;
   border: 1px solid #004fa8;
 }
+
 #train-progress-bar-inner {
   position: absolute;
   left: 0;
@@ -22,6 +46,14 @@
   bottom: 0;
   background: #66b0fd;
 }
+
 #train-status {
   display: block;
+}
+
+.red {
+  color: red;
+}
+.black {
+  color: black;
 }

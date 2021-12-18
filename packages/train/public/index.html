@@ -22,13 +22,14 @@
     <section>
         <h2>Загрузка модели</h2>
         <p>
-            Выберите 2 файла модели. JSON-файл с описанием структуры модели. И бинарный файл весов. Затем нажмите кнопку загрузки.
+            Выберите 2 файла модели. JSON-файл с описанием структуры модели. И бинарный файл весов. Затем нажмите кнопку
+            загрузки.
         </p>
         <div>
-            <input id="json-upload" type="file" accept=".json" />
+            <input id="json-upload" type="file" accept=".json"/>
         </div>
         <div>
-            <input id="weights-upload" type="file" accept=".weights.bin" />
+            <input id="weights-upload" type="file" accept=".weights.bin"/>
         </div>
         <button id="load-model">Загрузить модель</button>
         <div id="load-model-result"></div>
@@ -49,6 +50,20 @@
             </span>
             <span id="train-status"></span>
         </p>
+    </section>
+    <section>
+        <h2>Использование модели</h2>
+        <p>
+            Опишите позицию на поле и нажмите кнопку расчета. Модель выдаст последовательность перемещения карт для
+            решения карточного расклада.
+        </p>
+        <p><button id="random-board">Создать случайный расклад</button></p>
+        <div class="prism-live">
+          <textarea class="prism-live language-js" spellcheck="false"></textarea>
+          <pre class="prism-live language-js"><code class="language-js"></code></pre>
+        </div>
+        <button id="inference-model">Расчитать решение</button>
+        <p id="solver-result"></p>
     </section>
     <section>
         <h2>Скачивание модели</h2>

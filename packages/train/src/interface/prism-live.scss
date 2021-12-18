@@ -1,0 +1,88 @@
+div.prism-live {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  font: 400 16px / 24px Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  font-synthesis: weight style small-caps;
+  tab-size: 4;
+  width: 55%;
+  padding: 0.5em;
+  background: #f5f2f0;
+  border-radius: 0.5em;
+  margin-bottom: 1em;
+  height: 18em;
+}
+
+textarea.prism-live,
+pre.prism-live {
+  padding: .2rem .5rem;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+pre.prism-live > code {
+  position: relative;
+}
+
+textarea.prism-live {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  width: calc(100% - 1em);
+  height: calc(100% - 1em);
+  z-index: 1;
+  color: transparent;
+  /* color: hsla(0,0%,50%,.4); */
+  cursor: text;
+  white-space: pre;
+  border: 0;
+  outline: none;
+  background: transparent;
+  resize: none;
+  --selection-background: hsl(320, 80%, 25%);
+  --selection-color: hsla(0, 0%, 100%, .8);
+  caret-color: rgb(0, 0, 0);
+  font: inherit;
+  font-synthesis: inherit;
+  tab-size: inherit;
+  padding-left: 8px;
+  overflow: auto;
+}
+
+@supports (not (caret-color: black)) and (-webkit-text-fill-color: black) {
+  textarea.prism-live {
+    color: inherit;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Setting specific colors is needed
+ * because otherwise Firefox shows blank text */
+textarea.prism-live::-moz-selection {
+  background: var(--selection-background);
+  color: var(--selection-color);
+}
+
+textarea.prism-live::selection {
+  background: var(--selection-background);
+  color: var(--selection-color);
+}
+
+pre.prism-live {
+  flex: 1;
+  position: relative;
+  pointer-events: none;
+  overflow: hidden;
+  max-height: 100%;
+  --scrollbar-width: 17px;
+  padding-bottom: var(--scrollbar-width);
+  padding-right: var(--scrollbar-width);
+  font: inherit;
+  font-synthesis: inherit;
+  tab-size: inherit;
+}
+
+pre.prism-live > code:empty::before {
+  content: " "
+}
