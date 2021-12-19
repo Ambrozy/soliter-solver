@@ -11,6 +11,13 @@
     <h1>Решатель карточных игр «Солитер» при использовании tensorflow.js</h1>
     <section>
         <p>
+            Зарегистрированы несколько глобальных объектов.
+        </p>
+        <div>tf - tensorflow.js</div>
+        <div>tfvis - Визуальная библиотека tensorflow.js</div>
+        <div>model - Обучаемая модель</div>
+        <div>replayBuffer - Буфер повторов для сохранения игр, на которых обучается модель</div>
+        <p>
             Все данные о модели, данных и процесса обучения можно увидеть на панели логов.
         </p>
         <button id="toggle-visor">Переключить панель логов</button>
@@ -20,6 +27,39 @@
         <button id="toggle-backend">Переключить бэкенд</button>
     </section>
     <section>
+        <h2>Схема обучения</h2>
+        <p>Нейронная сеть (рис.1) состоит из нескольких блоков. Состояние расклада хранится в двухмерном массиве строк.
+            Перед отправкой в нейронную сеть строки преобразуются в one hot encoding вектор.</p>
+        <p>Выходом нейронной сети является 2 маски вероятностей, показывающие какую карту взять и куда перенести.</p>
+        <figure>
+            <p><img src="network.png" alt="Структура нейронной сети"/></p>
+            <figcaption>Рис.1. Структура нейронной сети</figcaption>
+        </figure>
+        <p>Перед очередной эпохой тренировки необходимо заполнить буфер повторов (рис.2). В нем хранится каждая
+            сыгранная игра. Но сохраняются только N лучших игр.</p>
+        <figure>
+            <p><img src="fill_replay_buffer.png" alt="Структура заполнения буфера повторов"/></p>
+            <figcaption>Рис.2. Структура заполнения буфера повторов</figcaption>
+        </figure>
+        <p>Когда буфер повторов заполнен подготавливаем данные для обучения. </p>
+        <p>На первой стадии сеть еще не знает правила игры и делает как валидные действия, так и невалидные действия
+            не ведущие в изменению состояния игры. Поэтому какое-то время данные для обучения берутся по схеме рис.3
+            (Stage I).</p>
+        <p>Когда сеть увереннее начинает выбирать валидные действия есть больше вероятности, что часть карт будет
+            попадать в корзину. А значит для выбора тренировочных данных можно воспользоваться схемой рис.3 (Stage
+            II)</p>
+        <figure>
+            <p><img src="training_data.png" alt="Выбор данных для обучения"/></p>
+            <figcaption>Рис.3. Выбор данных для обучения. Stage I - сеть не знает какие ходы валидные, а какие нет.
+                Stage II - сеть имеет представления какие ходы валидные
+            </figcaption>
+        </figure>
+    </section>
+    <section>
+        <h2>Схема использования</h2>
+        <p></p>
+    </section>
+    <section>
         <h2>Загрузка модели</h2>
         <p>
             Выберите 2 файла модели. JSON-файл с описанием структуры модели. И бинарный файл весов. Затем нажмите кнопку
@@ -27,9 +67,11 @@
         </p>
         <div>
             <input id="json-upload" type="file" accept=".json"/>
+            <label for="json-upload">*.json</label>
         </div>
         <div>
             <input id="weights-upload" type="file" accept=".weights.bin"/>
+            <label for="weights-upload">*.weights.bin</label>
         </div>
         <button id="load-model">Загрузить модель</button>
         <div id="load-model-result"></div>
@@ -57,10 +99,18 @@
             Опишите позицию на поле и нажмите кнопку расчета. Модель выдаст последовательность перемещения карт для
             решения карточного расклада.
         </p>
-        <p><button id="random-board">Создать случайный расклад</button></p>
+        <p>
+            <button id="random-board">Создать случайный расклад</button>
+        </p>
+        <p>
+            c - Черви <span class="red">&#9829;</span>,
+            p - Пики <span class="black">&#9824;</span>,
+            k - Крести <span class="black">&#9827;</span>,
+            b - Бубны <span class="red">&#9830;</span>
+        </p>
         <div class="prism-live">
-          <textarea class="prism-live language-js" spellcheck="false"></textarea>
-          <pre class="prism-live language-js"><code class="language-js"></code></pre>
+            <textarea class="prism-live language-js" spellcheck="false"></textarea>
+            <pre class="prism-live language-js"><code class="language-js"></code></pre>
         </div>
         <button id="inference-model">Расчитать решение</button>
         <p id="solver-result"></p>

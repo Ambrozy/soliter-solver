@@ -15,16 +15,20 @@ import { createModel, xShape, ReplayBuffer, solveEpisode, trainNEpoch } from './
 
 import './index.scss';
 
+let model = createModel(xShape);
+const replayBuffer = new ReplayBuffer(10, 32, 1, 10);
+
 type ExtWindow = typeof window & {
     tf: typeof tf;
     tfvis: typeof tfvis;
+    model: typeof model;
+    replayBuffer: typeof replayBuffer;
 };
 
 (window as ExtWindow).tf = tf;
 (window as ExtWindow).tfvis = tfvis;
-
-let model = createModel(xShape);
-const replayBuffer = new ReplayBuffer(10, 32, 1, 10);
+(window as ExtWindow).model = model;
+(window as ExtWindow).replayBuffer = replayBuffer;
 
 window.onload = async () => {
     await toggleBackend();
