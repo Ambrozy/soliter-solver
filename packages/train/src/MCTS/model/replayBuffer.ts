@@ -1,6 +1,6 @@
 import maxBy from 'lodash/maxBy';
 
-import { force, randomInteger } from '../../utils';
+import { force, prettifyCards, randomInteger } from '../../utils';
 import { tf } from './tf';
 import { Episode } from './types';
 import { prepareBoardX, toTfxBatch, toTfyBatch } from './utils';
@@ -36,7 +36,7 @@ export class ReplayBuffer {
         this.#data.push({ episode, maximumScore });
         this.#data.sort((a, b) => b.maximumScore - a.maximumScore);
         if (this.#data.length > this.length) {
-            this.#data.shift();
+            this.#data.pop();
         }
     }
 
@@ -95,5 +95,18 @@ export class ReplayBuffer {
         const iterator = this[Symbol.iterator].bind(this);
 
         return tf.data.generator(iterator);
+    }
+
+    getStatistics() {
+        return this.#data.map((episode, index) => {
+            const lastBin = episode.episode.at(-1).board.bin;
+
+            return [
+                index + 1,
+                prettifyCards(Object.values(lastBin).join(' ')),
+                episode.episode.at(-2).score,
+                episode.episode.length,
+            ];
+        });
     }
 }

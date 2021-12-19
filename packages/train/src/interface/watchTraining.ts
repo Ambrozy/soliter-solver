@@ -1,5 +1,5 @@
-import { TrainLog } from '../MCTS/train';
 import * as tfvis from '@tensorflow/tfjs-vis';
+import { ReplayBuffer, TrainLog } from '../MCTS';
 
 export const drawTrainLog = async (log: TrainLog) => {
     const surface = {
@@ -20,4 +20,12 @@ export const drawTrainLog = async (log: TrainLog) => {
     };
 
     await tfvis.render.linechart(surface, data, options);
+};
+
+export const drawReplayBuffer = async (replayBuffer: ReplayBuffer) => {
+    const headers = ['Index', 'Bin', 'Score', 'Step'];
+    const values = replayBuffer.getStatistics();
+    const surface = { name: 'ReplayBuffer', tab: 'Training' };
+
+    await tfvis.render.table(surface, { headers, values });
 };

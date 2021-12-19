@@ -1,7 +1,7 @@
 import { Board, moveToString, nextState, NONE_MOVE, possibleMoves } from '../game';
 import { sample, scoreToProbabilities } from '../utils';
 
-import { LayersModel, predictReward } from './model';
+import { LayersModel, predictReward, tf } from './model';
 import { getBoardScore } from './score';
 
 export const processOneMove = (
@@ -14,8 +14,11 @@ export const processOneMove = (
 
     if (moves.length) {
         const boards = moves.map((move) => [board, nextState(board, move)]);
-        const predications = predictReward(model, boards, steps);
-        const bestIndex = sampler(scoreToProbabilities(predications));
+        const bestIndex = tf.tidy(() => {
+            const predications = predictReward(model, boards, steps);
+
+            return sampler(scoreToProbabilities(predications));
+        });
         const bestMove = moves[bestIndex];
         const nextBoard = boards[bestIndex][1];
 

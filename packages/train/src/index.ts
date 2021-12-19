@@ -9,9 +9,11 @@ import {
     showPanel,
     initIO,
     initEditor,
+    drawReplayBuffer,
 } from './interface';
 import { randomBoard } from './game';
 import { createModel, xShape, ReplayBuffer, solveEpisode, trainNEpoch } from './MCTS';
+import { prettifyCards } from './utils';
 
 import './index.scss';
 
@@ -58,12 +60,7 @@ window.onload = async () => {
         }
 
         const history = await solveEpisode(model, 150, board);
-        resultContainer.innerHTML = history
-            .join(', ')
-            .replace(/([0-9JQKA])p/g, '$1<span class="black">&#9824;</span>')
-            .replace(/([0-9JQKA])c/g, '$1<span class="red">&#9829;</span>')
-            .replace(/([0-9JQKA])k/g, '$1<span class="black">&#9827;</span>')
-            .replace(/([0-9JQKA])b/g, '$1<span class="red">&#9830;</span>');
+        resultContainer.innerHTML = prettifyCards(history.join(', '));
     });
     document.querySelector('#train-model').addEventListener('click', async (event) => {
         console.log('Train started');
@@ -90,10 +87,12 @@ window.onload = async () => {
                 setProgress(0);
                 await showPanel();
                 await drawTrainLog({ loss: [] });
+                await drawReplayBuffer(replayBuffer);
                 status.innerHTML = 'Filling replay buffer...';
             },
             onReplayBufferEnd: () => {
                 status.innerHTML = 'Training model...';
+                drawReplayBuffer(replayBuffer);
             },
             onEpochEnd: async (epoch, log) => {
                 setProgress(epoch);
