@@ -10,7 +10,7 @@ import {
     initIO,
     initEditor,
     drawReplayBuffer,
-} from './interface';
+} from './article';
 import { randomBoard } from './game';
 import { createModel, xShape, ReplayBuffer, solveEpisode, trainNEpoch } from './MCTS';
 import { prettifyCards } from './utils';
@@ -18,7 +18,7 @@ import { prettifyCards } from './utils';
 import './index.scss';
 
 let model = createModel(xShape);
-const replayBuffer = new ReplayBuffer(10, 32, 1, 10);
+const replayBuffer = new ReplayBuffer(32, 32, 1, 30);
 
 type ExtWindow = typeof window & {
     tf: typeof tf;
@@ -43,25 +43,7 @@ window.onload = async () => {
     });
     initEditor();
 
-    document.querySelector('#inference-model').addEventListener('click', async () => {
-        const resultContainer = document.querySelector('#solver-result');
-        const boardLayout = document.querySelector(
-            '.prism-live textarea',
-        ) as HTMLInputElement;
-
-        resultContainer.innerHTML = 'Solving...';
-        const board = randomBoard();
-
-        try {
-            board.layout = JSON.parse(boardLayout.value);
-        } catch (_) {
-            resultContainer.innerHTML = 'Board layout is not readable. Check the syntax';
-            return;
-        }
-
-        const history = await solveEpisode(model, 150, board);
-        resultContainer.innerHTML = prettifyCards(history.join(', '));
-    });
+    // training
     document.querySelector('#train-model').addEventListener('click', async (event) => {
         console.log('Train started');
 
@@ -90,9 +72,9 @@ window.onload = async () => {
                 await drawReplayBuffer(replayBuffer);
                 status.innerHTML = 'Filling replay buffer...';
             },
-            onReplayBufferEnd: () => {
+            onReplayBufferEnd: async () => {
+                await drawReplayBuffer(replayBuffer);
                 status.innerHTML = 'Training model...';
-                drawReplayBuffer(replayBuffer);
             },
             onEpochEnd: async (epoch, log) => {
                 setProgress(epoch);
@@ -106,5 +88,25 @@ window.onload = async () => {
         button.disabled = false;
 
         console.log('Train ended');
+    });
+    // usage
+    document.querySelector('#inference-model').addEventListener('click', async () => {
+        const resultContainer = document.querySelector('#solver-result');
+        const boardLayout = document.querySelector(
+            '.prism-live textarea',
+        ) as HTMLInputElement;
+
+        resultContainer.innerHTML = 'Solving...';
+        const board = randomBoard();
+
+        try {
+            board.layout = JSON.parse(boardLayout.value);
+        } catch (_) {
+            resultContainer.innerHTML = 'Board layout is not readable. Check the syntax';
+            return;
+        }
+
+        const history = await solveEpisode(model, 150, board);
+        resultContainer.innerHTML = prettifyCards(history.join(', '));
     });
 };

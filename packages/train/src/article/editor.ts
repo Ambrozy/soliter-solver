@@ -1,6 +1,5 @@
 import { randomBoard } from '../game';
 
-// @ts-ignore
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import 'prismjs/components/prism-javascript.min.js';
