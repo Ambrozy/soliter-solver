@@ -1,11 +1,11 @@
 export const random = (min: number, max: number) => min + Math.random() * (max - min);
 export const randomInteger = (min: number, max: number) => Math.floor(random(min, max));
-export const randomShuffle = <T extends object>(a: T[]) =>
-    a.sort(() => randomInteger(-1, 2));
-export const sum = (array: number[]) => array.reduce((result, next) => result + next, 0);
-export const scoreToProbabilities = (scores: number[]) => {
-    const sumScore = sum(scores);
-    return scores.map((score) => score / sumScore);
+export const randomShuffle = <T>(a: T[]) => a.sort(() => randomInteger(-1, 2));
+export const sum = (array: number[], threshold = 0) =>
+    array.reduce((result, next) => (next > threshold ? result + next : result), 0);
+export const scoreToProbabilities = (scores: number[], threshold = 0) => {
+    const sumScore = sum(scores, threshold);
+    return scores.map((score) => (score > threshold ? score / sumScore : 0));
 };
 export const force = (probabilities: number[]) => {
     let maximum = 0;

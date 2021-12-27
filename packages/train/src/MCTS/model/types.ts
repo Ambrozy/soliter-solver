@@ -1,11 +1,8 @@
-import { Board } from '../../game';
-import { Tensor4D, Tensor2D } from './tf';
+import { Board, Move } from '../../game';
 
 export type Episode = Array<{
     board: Board;
-    nextBoard: Board;
+    move: Move;
     score: number;
+    done: boolean;
 }>;
-
-export type X = [Tensor4D, Tensor2D];
-export type Y = Tensor2D;

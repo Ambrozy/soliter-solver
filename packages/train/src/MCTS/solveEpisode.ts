@@ -1,4 +1,4 @@
-import { Board } from '../game';
+import { Bin, Board, isLose, isWin, moveToString } from '../game';
 import { asyncLoop, force } from '../utils';
 
 import { LayersModel } from './model';
@@ -6,20 +6,35 @@ import { processOneMove } from './processOneMove';
 
 export const solveEpisode = async (
     model: LayersModel,
-    stepsLimit: number,
     startBoard: Board,
+    expectedBin: Bin,
+    stepsLimit: number,
 ): Promise<string[]> => {
     let board = startBoard;
 
     return await asyncLoop(stepsLimit, 0, (steps) => {
-        const { score, bestMove, nextBoard } = processOneMove(model, board, steps, force);
+        const { bestMove, nextBoard } = processOneMove(
+            model,
+            board,
+            expectedBin,
+            steps,
+            force,
+        );
+        const isWinCondition = isWin(board, expectedBin);
+        const isLoseCondition = isLose(board);
+        const moveString = moveToString(board, bestMove);
+        const result =
+            steps === stepsLimit || board !== nextBoard ? moveString : undefined;
 
-        if (score === 0) {
-            return Promise.reject();
+        if (isWinCondition || isLoseCondition) {
+            const win = isWinCondition ? ' win' : '';
+            const lose = isLoseCondition ? ' lose' : '';
+
+            return Promise.reject(moveString + win + lose);
         }
 
         board = nextBoard;
-        // eslint-disable-next-line compat/compat
-        return Promise.resolve(bestMove);
+
+        return Promise.resolve(result);
     });
 };

@@ -85,7 +85,7 @@
         <p>
             Прогресс тренировки:
             <span class="train-progress">
-                <span id="train-progress-title">0 of 10</span>
+                <span id="train-progress-title">0 of 100</span>
                 <span class="train-progress-bar">
                     <span id="train-progress-bar-inner"></span>
                 </span>
@@ -108,8 +108,14 @@
             k - Крести <span class="black">&#9827;</span>,
             b - Бубны <span class="red">&#9830;</span>
         </p>
-        <div class="prism-live">
-            <textarea class="prism-live language-js" spellcheck="false"></textarea>
+        <p><label for="bin-input">Ожидаемая корзина (u - любая карта в корзине):</label></p>
+        <div id="bin-prism" class="prism-live" style="height: 3em;">
+            <textarea id="bin-input" class="prism-live language-js" spellcheck="false"></textarea>
+            <pre class="prism-live language-js"><code class="language-js"></code></pre>
+        </div>
+        <p><label for="board-input">Начальное состояние поля:</label></p>
+        <div id="board-prism" class="prism-live" style="height: 18em;">
+            <textarea id="board-input" class="prism-live language-js" spellcheck="false"></textarea>
             <pre class="prism-live language-js"><code class="language-js"></code></pre>
         </div>
         <button id="inference-model">Расчитать решение</button>

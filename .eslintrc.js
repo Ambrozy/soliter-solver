@@ -31,6 +31,7 @@ module.exports = {
 		'import/no-cycle': 'error',
 		'import/no-extraneous-dependencies': 'error',
 		'import/no-unused-modules': 'off',
+		'compat/compat': 'off',
         '@typescript-eslint/ban-types': 'off',
         '@typescript-eslint/no-shadow': 'error',
         '@typescript-eslint/no-use-before-define': 'error',

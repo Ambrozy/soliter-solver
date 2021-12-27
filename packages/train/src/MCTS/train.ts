@@ -1,3 +1,4 @@
+import { Bin } from '../game';
 import { asyncLoop } from '../utils';
 import { playEpisode } from './playEpisode';
 import { LayersModel, ReplayBuffer } from './model';
@@ -27,7 +28,7 @@ const defaultProps: TrainProps = {
     epochs: 10,
     episodesPerEpoch: 10,
     epochsPerEpoch: 1,
-    stepsLimit: 150,
+    stepsLimit: 120,
     verbose: 1,
     onTrainStart: () => undefined,
     onTrainEnd: () => undefined,
@@ -35,13 +36,14 @@ const defaultProps: TrainProps = {
     onEpochEnd: () => undefined,
 };
 
-const fillReplayBuffer = async (
+export const fillReplayBuffer = async (
     model: LayersModel,
     replayBuffer: ReplayBuffer,
-    props: TrainProps,
+    expectedBin: Bin,
+    props: Pick<TrainProps, 'episodesPerEpoch' | 'stepsLimit'>,
 ) => {
     await asyncLoop(0, props.episodesPerEpoch, async () => {
-        const episode = await playEpisode(model, props.stepsLimit);
+        const episode = await playEpisode(model, expectedBin, props.stepsLimit);
         replayBuffer.push(episode);
     });
 };
@@ -58,7 +60,8 @@ export const trainNEpoch = async (
 
     props.onTrainStart();
     for (const epoch of Array(props.epochs).keys()) {
-        await fillReplayBuffer(model, replayBuffer, props);
+        const expectedBin = ['Kk', 'Kp', 'Kc', 'Kb'];
+        await fillReplayBuffer(model, replayBuffer, expectedBin, props);
         props.onReplayBufferEnd(epoch, replayBuffer.count());
 
         // train on replays

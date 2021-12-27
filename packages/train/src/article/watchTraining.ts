@@ -25,7 +25,7 @@ export const drawTrainLog = async (log: TrainLog) => {
 export const drawReplayBuffer = async (replayBuffer: ReplayBuffer) => {
     const headers = ['Index', 'Bin', 'Score', 'Step'];
     const values = replayBuffer.getStatistics();
-    const surface = { name: 'ReplayBuffer', tab: 'Training' };
+    const surface = { name: 'Replay Buffer Summary', tab: 'Replay Buffer' };
 
     await tfvis.render.table(surface, { headers, values });
 };

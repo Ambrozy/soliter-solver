@@ -12,10 +12,13 @@ export const asyncLoop = <T>(
             if (sign > 0 ? iteration < end : iteration > end) {
                 try {
                     const iterationResult = await loopFunction(iteration);
-                    if (iterationResult) {
+                    if (iterationResult !== undefined) {
                         result.push(iterationResult);
                     }
-                } catch (_) {
+                } catch (iterationResult) {
+                    if (iterationResult !== undefined) {
+                        result.push(iterationResult);
+                    }
                     resolve(result);
                 }
 
@@ -27,7 +30,6 @@ export const asyncLoop = <T>(
         }, 0);
     };
 
-    // eslint-disable-next-line compat/compat
     return new Promise<T[]>((resolve) => {
         loop(resolve);
     });

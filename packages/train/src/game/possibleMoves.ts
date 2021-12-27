@@ -1,80 +1,97 @@
-import { Board, CardFromPosition, Move } from './types';
+import { BIN_INDEXES, Board, EMPTY, Move, PLACE_INDEXES, Position } from './types';
 import {
-    getCompatibleIndexes,
+    getAt,
+    getCardStackLength,
     getLastCards,
-    getLeftSpace,
     getStackPossibleLength,
     isCompatible,
     isCompatibleBin,
 } from './utils';
-import { BIN, PLACE } from './constants';
+import { range } from '../utils';
 
-const hasMove = (card: string, stack: string[], possibleLength: number): boolean => {
-    const lastCard = stack.at(-1);
-    const stackLength = stack.length;
+const getCompatibleColumnIndexes = (
+    card: string,
+    lastCards: string[],
+    excludeColumnIndex: number,
+) => {
+    const indexes: number[] = [];
 
-    return (!lastCard || isCompatible(card, lastCard)) && stackLength <= possibleLength;
+    lastCards.forEach((lastCard, columnIndex) => {
+        if (isCompatible(lastCard, card) && columnIndex !== excludeColumnIndex) {
+            indexes.push(columnIndex);
+        }
+    });
+
+    return indexes;
 };
 
 export const possibleMoves = (board: Board): Move[] => {
-    const [lastCards, lastIndexes] = getLastCards(board.layout);
-    const possibleLength = getStackPossibleLength(board.place, lastCards);
-    let cardStack: string[] = [];
+    const [lastCards, lastIndexes] = getLastCards(board);
+    const maxStackLength = getStackPossibleLength(board);
+    const maxEmptyColumnStackLength = getStackPossibleLength(board, true);
     const moves: Move[] = [];
 
+    const getToLayoutMoves = (card: string, from: Position, stackLength: number) => {
+        const column = from[1];
+        const indexes = getCompatibleColumnIndexes(card, lastCards, column);
+
+        return indexes
+            .map((columnIndex) => {
+                const toLevel = lastIndexes[columnIndex];
+                return [toLevel === 1 ? 1 : toLevel + 1, columnIndex];
+            })
+            .filter(
+                (to) =>
+                    (to[0] === 1 && stackLength <= maxEmptyColumnStackLength) ||
+                    (to[0] > 1 && stackLength <= maxStackLength),
+            )
+            .map((to) => [from, to] as Move);
+    };
+    const getToBinMoves = (card: string, from: Position) =>
+        BIN_INDEXES.filter((columnIndex) =>
+            isCompatibleBin(getAt(board, [0, columnIndex]), card),
+        ).map((columnIndex) => [from, [0, columnIndex]] as Move);
+    const getToPlaceMoves = (from: Position) =>
+        PLACE_INDEXES.filter(
+            (columnIndex) => getAt(board, [0, columnIndex]) === EMPTY,
+        ).map((columnIndex) => [from, [0, columnIndex]] as Move);
+
     // from layout
-    board.layout.forEach((column, fromColumnIndex) => {
-        for (let fromCardIndex = column.length - 1; fromCardIndex >= 0; fromCardIndex--) {
-            const card = column[fromCardIndex];
-            if (card) {
-                if (!hasMove(card, cardStack, possibleLength)) {
-                    break;
-                }
-                if (card) {
-                    cardStack.push(card);
-                }
-
-                const from = [fromColumnIndex, fromCardIndex] as CardFromPosition;
-
+    for (const column of range(board[0].length)) {
+        for (let level = 1; level < board.length; level++) {
+            const from = [level, column] as Position;
+            const card = getAt(board, from);
+            const stackLength = getCardStackLength(board, from);
+            if (stackLength > 0) {
                 // to layout
-                const columnIndexes = getCompatibleIndexes(lastCards, card);
-                const layoutMoves = columnIndexes
-                    .filter((toColumnIndex) => toColumnIndex !== fromColumnIndex)
-                    .map((toColumnIndex) => [
-                        from,
-                        [toColumnIndex, lastIndexes[toColumnIndex]],
-                    ]);
-                moves.push(...(layoutMoves as Move[]));
-
+                const toLayoutMoves = getToLayoutMoves(card, from, stackLength);
+                moves.push(...toLayoutMoves);
+            }
+            if (stackLength === 1) {
                 // to place
-                if (cardStack.length === 1 && getLeftSpace(board.place)) {
-                    moves.push([from, PLACE]);
-                }
+                const toPlaceMoves = getToPlaceMoves(from);
+                moves.push(...toPlaceMoves);
 
                 // to bin
-                if (cardStack.length === 1 && isCompatibleBin(board.bin, card)) {
-                    moves.push([from, BIN]);
-                }
+                const toBinMoves = getToBinMoves(card, from);
+                moves.push(...toBinMoves);
             }
         }
-
-        cardStack = [];
-    });
+    }
 
     // from place
-    board.place.forEach((card, fromCardIndex) => {
-        const from = [PLACE, fromCardIndex];
-        // to layout
-        const columnIndexes = getCompatibleIndexes(lastCards, card);
-        const layoutMoves = columnIndexes.map((toColumnIndex) => [
-            from,
-            [toColumnIndex, lastIndexes[toColumnIndex]],
-        ]);
-        moves.push(...(layoutMoves as Move[]));
+    PLACE_INDEXES.forEach((columnIndex) => {
+        const from = [0, columnIndex] as Position;
+        const card = getAt(board, from);
 
-        // to bin
-        if (isCompatibleBin(board.bin, card)) {
-            moves.push([from, BIN] as Move);
+        if (card) {
+            // to layout
+            const toLayoutMoves = getToLayoutMoves(card, from, 0);
+            moves.push(...toLayoutMoves);
+
+            // to bin
+            const toBinMoves = getToBinMoves(card, from);
+            moves.push(...toBinMoves);
         }
     });
 

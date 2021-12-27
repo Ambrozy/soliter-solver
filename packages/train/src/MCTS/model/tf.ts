@@ -12,6 +12,7 @@ export type {
     Tensor4D,
     ModelFitArgs,
 } from '@tensorflow/tfjs';
+export type { LayerArgs } from '@tensorflow/tfjs-layers/dist/engine/topology';
 export type ActivationIdentifier =
     | 'elu'
     | 'hardSigmoid'

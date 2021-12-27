@@ -2,38 +2,54 @@ import * as tf from '@tensorflow/tfjs';
 import * as tfvis from '@tensorflow/tfjs-vis';
 import {
     showModel,
-    toggleBackend,
+    // toggleBackend,
     initToggleBackendButton,
     initTogglePanelButton,
     drawTrainLog,
     showPanel,
     initIO,
     initEditor,
+    initUsage,
     drawReplayBuffer,
 } from './article';
-import { randomBoard } from './game';
-import { createModel, xShape, ReplayBuffer, solveEpisode, trainNEpoch } from './MCTS';
-import { prettifyCards } from './utils';
+import {
+    binShape,
+    createModel,
+    ReplayBuffer,
+    replays,
+    stringsToEpisode,
+    trainNEpoch,
+    xShape,
+} from './MCTS';
 
 import './index.scss';
 
-let model = createModel(xShape);
-const replayBuffer = new ReplayBuffer(32, 32, 1, 30);
+let model = createModel(xShape, binShape);
+const replayBuffer = new ReplayBuffer({
+    length: 64,
+    batchSize: 128,
+});
 
 type ExtWindow = typeof window & {
     tf: typeof tf;
     tfvis: typeof tfvis;
     model: typeof model;
     replayBuffer: typeof replayBuffer;
+    stringsToEpisode: typeof stringsToEpisode;
 };
 
 (window as ExtWindow).tf = tf;
 (window as ExtWindow).tfvis = tfvis;
 (window as ExtWindow).model = model;
 (window as ExtWindow).replayBuffer = replayBuffer;
+(window as ExtWindow).stringsToEpisode = stringsToEpisode;
 
 window.onload = async () => {
-    await toggleBackend();
+    replays.map((replay) => {
+        replayBuffer.push(stringsToEpisode(replay.startBoard, replay.history));
+    });
+    await drawReplayBuffer(replayBuffer);
+    // await toggleBackend();
     await showModel(model);
 
     initToggleBackendButton();
@@ -42,13 +58,14 @@ window.onload = async () => {
         model = loadedModel;
     });
     initEditor();
+    initUsage(model);
 
     // training
     document.querySelector('#train-model').addEventListener('click', async (event) => {
         console.log('Train started');
 
         const button = event.currentTarget as HTMLButtonElement;
-        const epochs = 10;
+        const epochs = 100;
         const status = document.querySelector('#train-status');
         const progressTitle = document.querySelector('#train-progress-title');
         const progressBar = document.querySelector('#train-progress-bar-inner');
@@ -56,14 +73,18 @@ window.onload = async () => {
             progressTitle.innerHTML = `${epoch} of ${epochs}`;
             (progressBar as HTMLDivElement).style.width = `${(100 * epoch) / epochs}%`;
         };
+        setProgress(0);
 
         button.disabled = true;
-        model.compile({ loss: 'meanSquaredError', optimizer: 'adam' });
+        model.compile({
+            loss: ['binaryCrossentropy', 'binaryCrossentropy'],
+            optimizer: 'adam',
+        });
         await trainNEpoch(model, replayBuffer, {
             epochs,
-            episodesPerEpoch: 5,
+            episodesPerEpoch: 1,
             epochsPerEpoch: 1,
-            stepsLimit: 150,
+            stepsLimit: 120,
             verbose: 1,
             onTrainStart: async () => {
                 setProgress(0);
@@ -88,25 +109,5 @@ window.onload = async () => {
         button.disabled = false;
 
         console.log('Train ended');
-    });
-    // usage
-    document.querySelector('#inference-model').addEventListener('click', async () => {
-        const resultContainer = document.querySelector('#solver-result');
-        const boardLayout = document.querySelector(
-            '.prism-live textarea',
-        ) as HTMLInputElement;
-
-        resultContainer.innerHTML = 'Solving...';
-        const board = randomBoard();
-
-        try {
-            board.layout = JSON.parse(boardLayout.value);
-        } catch (_) {
-            resultContainer.innerHTML = 'Board layout is not readable. Check the syntax';
-            return;
-        }
-
-        const history = await solveEpisode(model, 150, board);
-        resultContainer.innerHTML = prettifyCards(history.join(', '));
     });
 };
