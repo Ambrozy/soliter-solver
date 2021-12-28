@@ -4,7 +4,7 @@ import {
     randomBinFromEpisode,
     removeIneffectiveSteps,
     toOhe,
-} from '../model/utils';
+} from '../utils';
 
 Array.prototype.at = function (index: number) {
     return index >= 0 ? this[index] : this[this.length + index];

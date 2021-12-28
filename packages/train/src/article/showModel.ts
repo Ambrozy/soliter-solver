@@ -1,5 +1,5 @@
 import * as tfvis from '@tensorflow/tfjs-vis';
-import { LayersModel } from '../experiments/common/tf';
+import { LayersModel } from '@tensorflow/tfjs-layers';
 
 export async function showModel(model: LayersModel) {
     const surface = {

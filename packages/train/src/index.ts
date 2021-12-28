@@ -12,13 +12,8 @@ import {
     initUsage,
     drawReplayBuffer,
 } from './article';
-import {
-    createModel,
-    ReplayBuffer,
-    replays,
-    stringsToEpisode,
-    trainNEpoch,
-} from './experiments/segmentation';
+import { replays, stringsToEpisode } from './experiments/common';
+import { createModel, ReplayBuffer, trainNEpoch } from './experiments/segmentation';
 
 import './index.scss';
 

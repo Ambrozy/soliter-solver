@@ -1,7 +1,7 @@
 import { Bin, isLose, isWin, moveToString, randomBoard } from '../../game';
 import { asyncLoop, sample } from '../../utils';
-
-import { LayersModel, Episode } from './model';
+import { LayersModel } from '../common/tf';
+import { Episode } from '../common/types';
 import { processOneMove } from './processOneMove';
 
 export const playEpisode = async (

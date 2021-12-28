@@ -1,7 +1,8 @@
 import { Bin } from '../../game';
 import { asyncLoop } from '../../utils';
+import { LayersModel } from '../common/tf';
 import { playEpisode } from './playEpisode';
-import { LayersModel, ReplayBuffer } from './model';
+import { ReplayBuffer } from './replayBuffer';
 
 export interface TrainLog {
     loss: number[];

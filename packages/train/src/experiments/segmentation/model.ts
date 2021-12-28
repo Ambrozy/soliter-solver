@@ -1,13 +1,13 @@
-import { range } from '../../../utils';
+import { range } from '../../utils';
+import { binShape, xShape } from '../common';
 import {
     ConcatLayer,
     conv2dLayer,
     MixerLayer,
     MixerLayerProps,
     Transpose,
-} from '../../common/layers';
-import { ContainerArgs, LayerOutput, Tensor, tf } from '../../common/tf';
-import { binShape, xShape } from './utils';
+} from '../common/layers';
+import { ContainerArgs, LayerOutput, Tensor, tf } from '../common/tf';
 
 const mixer = (board: LayerOutput, depth: number, props: MixerLayerProps) => {
     let outBoard = new Transpose({

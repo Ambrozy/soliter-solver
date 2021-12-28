@@ -7,6 +7,6 @@ describe('predictionToPosition', () => {
             0, 0, 0, 0, 0, 0, 0, 0, // 8
             0, 0, 0, 0, 1, 0, 0, 0 // 16
         ];
-        expect(predictionToPosition(indexMap, force)).toEqual([1, 4]);
+        expect(predictionToPosition(indexMap, force, 0)).toEqual([1, 4]);
     });
 });

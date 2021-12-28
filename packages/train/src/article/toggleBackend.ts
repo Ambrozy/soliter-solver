@@ -1,4 +1,4 @@
-import { tf } from '../experiments/segmentation';
+import { tf } from '../experiments/common/tf';
 
 let isCPU = false;
 const template = () => `Toggle backend to ${isCPU ? 'webgl' : 'cpu'}`;

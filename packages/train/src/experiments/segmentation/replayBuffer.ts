@@ -1,8 +1,6 @@
 import maxBy from 'lodash/maxBy';
 
-import { prettifyCards } from '../../../utils';
-import { tf } from '../../common/tf';
-import { Episode } from './types';
+import { prettifyCards } from '../../utils';
 import {
     getLastBinFromEpisode,
     encodeBoard,
@@ -10,7 +8,9 @@ import {
     positionToIndexMap,
     randomBinFromEpisode,
     removeIneffectiveSteps,
-} from './utils';
+} from '../common';
+import { tf } from '../common/tf';
+import { Episode } from '../common/types';
 
 type DataItem = {
     episode: Episode;

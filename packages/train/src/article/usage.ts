@@ -1,6 +1,6 @@
+import { LayersModel } from '@tensorflow/tfjs-layers';
 import { randomBoard } from '../game';
 import { solveEpisode } from '../experiments/segmentation';
-import { LayersModel } from '../experiments/common/tf';
 import { prettifyCards } from '../utils';
 import { parseEditor } from './editor';
 
