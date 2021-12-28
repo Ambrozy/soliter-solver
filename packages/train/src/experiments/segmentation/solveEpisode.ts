@@ -1,5 +1,5 @@
-import { Bin, Board, isLose, isWin, moveToString } from '../game';
-import { asyncLoop, force } from '../utils';
+import { Bin, Board, isLose, isWin, moveToString } from '../../game';
+import { asyncLoop, force } from '../../utils';
 
 import { LayersModel } from './model';
 import { processOneMove } from './processOneMove';

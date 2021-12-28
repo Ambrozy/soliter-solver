@@ -1,4 +1,4 @@
-import { Board, Move } from '../../game';
+import { Board, Move } from '../../../game';
 
 export type Episode = Array<{
     board: Board;

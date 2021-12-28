@@ -14,8 +14,8 @@ import {
     PLACE_INDEXES,
     SPADES,
     SPADES_INDEX,
-} from '../game';
-import { flattenBoard, isBoardValid } from '../utils/board';
+} from '../../game';
+import { flattenBoard, isBoardValid } from '../../utils/board';
 
 const getPlacePosition = (board: Board, card: string) => {
     for (const index of PLACE_INDEXES) {

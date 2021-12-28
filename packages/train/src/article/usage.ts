@@ -1,6 +1,6 @@
 import { randomBoard } from '../game';
-import { solveEpisode } from '../MCTS';
-import { LayersModel } from '../MCTS/model';
+import { solveEpisode } from '../experiments/segmentation';
+import { LayersModel } from '../experiments/common/tf';
 import { prettifyCards } from '../utils';
 import { parseEditor } from './editor';
 

@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { LayersModel } from '../MCTS/model/tf';
+import { LayersModel } from '../experiments/common/tf';
 import { showModel } from './showModel';
 
 export const initIO = (model: LayersModel, onLoad: (model: LayersModel) => void) => {

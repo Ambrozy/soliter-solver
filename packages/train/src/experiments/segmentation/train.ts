@@ -1,5 +1,5 @@
-import { Bin } from '../game';
-import { asyncLoop } from '../utils';
+import { Bin } from '../../game';
+import { asyncLoop } from '../../utils';
 import { playEpisode } from './playEpisode';
 import { LayersModel, ReplayBuffer } from './model';
 

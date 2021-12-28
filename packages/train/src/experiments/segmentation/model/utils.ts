@@ -1,5 +1,5 @@
-import { Bin, Board, Position, randomBoard, UNKNOWN_CARD } from '../../game';
-import { flattenBoard } from '../../utils/board';
+import { Bin, Board, Position, randomBoard, UNKNOWN_CARD } from '../../../game';
+import { flattenBoard } from '../../../utils/board';
 import { Episode } from './types';
 
 export const toOhe = (index: number, length: number) => {

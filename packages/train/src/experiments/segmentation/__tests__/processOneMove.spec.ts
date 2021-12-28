@@ -1,4 +1,4 @@
-import { force } from '../../utils';
+import { force } from '../../../utils';
 import { predictionToPosition } from '../processOneMove';
 
 describe('predictionToPosition', () => {

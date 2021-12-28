@@ -1,5 +1,5 @@
-import { Bin, isLose, isWin, moveToString, randomBoard } from '../game';
-import { asyncLoop, sample } from '../utils';
+import { Bin, isLose, isWin, moveToString, randomBoard } from '../../game';
+import { asyncLoop, sample } from '../../utils';
 
 import { LayersModel, Episode } from './model';
 import { processOneMove } from './processOneMove';

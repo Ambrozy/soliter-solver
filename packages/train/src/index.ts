@@ -13,18 +13,16 @@ import {
     drawReplayBuffer,
 } from './article';
 import {
-    binShape,
     createModel,
     ReplayBuffer,
     replays,
     stringsToEpisode,
     trainNEpoch,
-    xShape,
-} from './MCTS';
+} from './experiments/segmentation';
 
 import './index.scss';
 
-let model = createModel(xShape, binShape);
+let model = createModel();
 const replayBuffer = new ReplayBuffer({
     length: 64,
     batchSize: 128,

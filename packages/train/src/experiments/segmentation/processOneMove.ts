@@ -1,5 +1,5 @@
-import { Bin, Board, Move, getBoardScore, nextState, Position } from '../game';
-import { sample, scoreToProbabilities } from '../utils';
+import { Bin, Board, Move, getBoardScore, nextState, Position } from '../../game';
+import { sample, scoreToProbabilities } from '../../utils';
 
 import {
     binShape,
@@ -9,7 +9,7 @@ import {
     tf,
     xShape,
 } from './model';
-import { Tensor } from './model/tf';
+import { Tensor } from '../common/tf';
 
 export const predictionToPosition = (
     indexMap: number[],

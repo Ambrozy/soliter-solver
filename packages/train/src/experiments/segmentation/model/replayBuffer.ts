@@ -1,7 +1,7 @@
 import maxBy from 'lodash/maxBy';
 
-import { prettifyCards } from '../../utils';
-import { tf } from './tf';
+import { prettifyCards } from '../../../utils';
+import { tf } from '../../common/tf';
 import { Episode } from './types';
 import {
     getLastBinFromEpisode,

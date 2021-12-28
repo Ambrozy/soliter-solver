@@ -1,12 +1,13 @@
+import { range } from '../../../utils';
 import {
     ConcatLayer,
     conv2dLayer,
     MixerLayer,
     MixerLayerProps,
     Transpose,
-} from './layers';
-import { ContainerArgs, LayerOutput, Tensor, tf } from './tf';
-import { range } from '../../utils';
+} from '../../common/layers';
+import { ContainerArgs, LayerOutput, Tensor, tf } from '../../common/tf';
+import { binShape, xShape } from './utils';
 
 const mixer = (board: LayerOutput, depth: number, props: MixerLayerProps) => {
     let outBoard = new Transpose({
@@ -26,7 +27,8 @@ const mixer = (board: LayerOutput, depth: number, props: MixerLayerProps) => {
     return outBoard;
 };
 
-export const createModel = (inputShape: number[], expectedBinShape: number[]) => {
+export const createModel = () => {
+    const [inputShape, expectedBinShape] = [xShape, binShape];
     const inputBoard = tf.layers.input({ shape: inputShape, name: 'board' }); // 23x8x?
     const inputBin = tf.layers.input({ shape: expectedBinShape, name: 'expectedBin' }); // 4x?
     const inputSteps = tf.layers.input({ shape: [1], name: 'stepsLimit' });
