@@ -1,4 +1,5 @@
 import {
+    getFinalScore,
     getLastBinFromEpisode,
     positionToIndexMap,
     randomBinFromEpisode,
@@ -48,6 +49,13 @@ describe('utils', () => {
             const board = [['', '', '', '', 'Kk', 'Kp', 'Kc', 'Kb']];
             const episode = [{ board }] as any;
             expect(getLastBinFromEpisode(episode)).toEqual(['Kk', 'Kp', 'Kc', 'Kb']);
+        });
+    });
+
+    describe('getFinalScore', () => {
+        it('should return last score', () => {
+            const episode = [{ score: 10 }, { score: 2 }, { score: 5 }] as any;
+            expect(getFinalScore(episode)).toBe(5);
         });
     });
 

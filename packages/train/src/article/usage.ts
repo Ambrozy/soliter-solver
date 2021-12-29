@@ -1,10 +1,11 @@
 import { LayersModel } from '@tensorflow/tfjs-layers';
 import { randomBoard } from '../game';
-import { solveEpisode } from '../experiments/segmentation';
+import { solveEpisode } from '../experiments/common';
+import { ProcessOneMoveType } from '../experiments/common/types';
 import { prettifyCards } from '../utils';
 import { parseEditor } from './editor';
 
-export const initUsage = (model: LayersModel) => {
+export const initUsage = (model: LayersModel, processOneMove: ProcessOneMoveType) => {
     document.querySelector('#inference-model').addEventListener('click', async () => {
         const resultContainer = document.querySelector('#solver-result');
         let board = randomBoard();
@@ -20,7 +21,13 @@ export const initUsage = (model: LayersModel) => {
             return;
         }
 
-        const history = await solveEpisode(model, board, expectedBin, 120);
+        const history = await solveEpisode(
+            model,
+            processOneMove,
+            board,
+            expectedBin,
+            120,
+        );
         resultContainer.innerHTML = 'Solved: ' + prettifyCards(history.join(', '));
     });
 };

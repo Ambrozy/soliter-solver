@@ -1,11 +1,12 @@
-import { Bin, Board, Move, getBoardScore, nextState, Position } from '../../game';
-import { sample, scoreToProbabilities } from '../../utils';
+import { Move, getBoardScore, nextState, Position } from '../../game';
+import { scoreToProbabilities } from '../../utils';
 import { binShape, encodeBoard, encodeExpectedBin, xShape } from '../common';
-import { tf, LayersModel, Tensor } from '../common/tf';
+import { tf, Tensor } from '../common/tf';
+import { ProcessOneMoveType, SamplerType } from '../common/types';
 
 export const predictionToPosition = (
     indexMap: number[],
-    sampler: typeof sample,
+    sampler: SamplerType,
     threshold: number,
 ): Position => {
     const globalIndex = sampler(scoreToProbabilities(indexMap, threshold));
@@ -15,16 +16,18 @@ export const predictionToPosition = (
     return [levelIndex, columnIndex];
 };
 
-export const processOneMove = (
-    model: LayersModel,
-    board: Board,
-    bin: Bin,
-    steps: number,
-    sampler = sample,
+export const processOneMove: ProcessOneMoveType = (
+    model,
+    _,
+    board,
+    bin,
+    steps,
+    sampler,
 ) => {
     const bestMove = tf.tidy(() => {
         const boardOhe = [encodeBoard(board)];
         const binOhe = [encodeExpectedBin(bin)];
+
         const boardTensor = tf.tensor(boardOhe, [1, ...xShape], 'float32');
         const binTensor = tf.tensor(binOhe, [1, ...binShape], 'float32');
         const stepsTensor = tf.tensor(steps, [1, 1], 'float32');

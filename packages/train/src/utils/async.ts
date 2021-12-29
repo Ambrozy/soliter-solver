@@ -1,36 +1,30 @@
-export const asyncLoop = <T>(
+export const asyncLoop = (
     start: number,
     end: number,
-    loopFunction: (index: number) => Promise<T>,
+    loopFunction: (index: number) => Promise<void>,
 ) => {
     const sign = Math.sign(end - start);
-    const result: T[] = [];
     let iteration = start;
 
-    const loop = (resolve: (value: T[]) => void) => {
+    const loop = (resolve: () => void, reject: () => void) => {
         setTimeout(async () => {
             if (sign > 0 ? iteration < end : iteration > end) {
                 try {
-                    const iterationResult = await loopFunction(iteration);
-                    if (iterationResult !== undefined) {
-                        result.push(iterationResult);
+                    await loopFunction(iteration);
+                } catch (error) {
+                    if (error instanceof Error) {
+                        throw error;
                     }
-                } catch (iterationResult) {
-                    if (iterationResult !== undefined) {
-                        result.push(iterationResult);
-                    }
-                    resolve(result);
+                    return reject();
                 }
 
                 iteration += sign;
-                loop(resolve);
+                loop(resolve, reject);
             } else {
-                resolve(result);
+                resolve();
             }
         }, 0);
     };
 
-    return new Promise<T[]>((resolve) => {
-        loop(resolve);
-    });
+    return new Promise<void>(loop);
 };

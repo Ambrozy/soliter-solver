@@ -1,6 +1,6 @@
 import { Bin, Board, Position, randomBoard, UNKNOWN_CARD } from '../../game';
 import { flattenBoard } from '../../utils/board';
-import { Episode } from './types';
+import type { Episode } from './types';
 
 export const toOhe = (index: number, length: number) => {
     const ohe = new Float32Array(length);
@@ -13,13 +13,13 @@ export const toOhe = (index: number, length: number) => {
 const getBoardOheMap = () => {
     const board = randomBoard();
     const cardSet = new Set(flattenBoard(board));
-    cardSet.add(UNKNOWN_CARD);
     const setLength = cardSet.size;
     const oheMap: Record<string, Float32Array> = {};
 
     Array.from(cardSet).forEach((card, index) => {
         oheMap[card] = toOhe(index, setLength);
     });
+    oheMap[UNKNOWN_CARD] = new Float32Array(setLength); // zeros
 
     return [oheMap, setLength] as const;
 };
@@ -70,3 +70,5 @@ export const positionToIndexMap = (position: Position) => {
     indexMap[from] = 1;
     return indexMap;
 };
+
+export const getFinalScore = (episodes: Episode) => episodes.at(-1).score;

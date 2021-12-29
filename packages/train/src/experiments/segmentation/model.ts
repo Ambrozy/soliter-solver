@@ -1,31 +1,6 @@
-import { range } from '../../utils';
 import { binShape, xShape } from '../common';
-import {
-    ConcatLayer,
-    conv2dLayer,
-    MixerLayer,
-    MixerLayerProps,
-    Transpose,
-} from '../common/layers';
-import { ContainerArgs, LayerOutput, Tensor, tf } from '../common/tf';
-
-const mixer = (board: LayerOutput, depth: number, props: MixerLayerProps) => {
-    let outBoard = new Transpose({
-        perm: [2, 0, 1],
-        name: `${props.name}_transpose_in`,
-    }).apply(board);
-    for (const i of range(depth)) {
-        outBoard = new MixerLayer({
-            ...props,
-            name: `${props.name}_${i}`,
-        }).apply(outBoard);
-    }
-    outBoard = new Transpose({
-        perm: [1, 2, 0],
-        name: `${props.name}_transpose_out`,
-    }).apply(outBoard);
-    return outBoard;
-};
+import { ConcatLayer, conv2dLayer, mixer } from '../common/layers';
+import { ContainerArgs, Tensor, tf } from '../common/tf';
 
 export const createModel = () => {
     const [inputShape, expectedBinShape] = [xShape, binShape];
@@ -104,9 +79,16 @@ export const createModel = () => {
     to = softmaxLayer.apply(to);
     to = tf.layers.flatten({ name: 'to' }).apply(to);
 
-    return tf.model({
+    const model = tf.model({
         inputs: [inputBoard, inputBin, inputSteps],
         outputs: [from, to],
         name: 'model',
     } as ContainerArgs);
+
+    model.compile({
+        loss: ['binaryCrossentropy', 'binaryCrossentropy'],
+        optimizer: 'adam',
+    });
+
+    return model;
 };

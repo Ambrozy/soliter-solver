@@ -1,5 +1,6 @@
 import * as tfvis from '@tensorflow/tfjs-vis';
-import { ReplayBuffer, TrainLog } from '../experiments/segmentation';
+import { ReplayBuffer } from '../experiments/common/ReplayBuffer';
+import { TrainLog } from '../experiments/common/types';
 
 export const drawTrainLog = async (log: TrainLog) => {
     const surface = {

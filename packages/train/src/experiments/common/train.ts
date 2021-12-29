@@ -1,17 +1,9 @@
-import { Bin } from '../../game';
+import { Bin, randomBoard } from '../../game';
 import { asyncLoop } from '../../utils';
-import { LayersModel } from '../common/tf';
+import type { ReplayBuffer } from './ReplayBuffer';
+import type { LayersModel } from './tf';
 import { playEpisode } from './playEpisode';
-import { ReplayBuffer } from './replayBuffer';
-
-export interface TrainLog {
-    loss: number[];
-}
-
-export interface ReplayBufferLog {
-    episodes: number;
-    steps: number;
-}
+import type { ProcessOneMoveType, ReplayBufferLog, TrainLog } from './types';
 
 interface TrainProps {
     epochs: number;
@@ -39,18 +31,26 @@ const defaultProps: TrainProps = {
 
 export const fillReplayBuffer = async (
     model: LayersModel,
+    processOneMove: ProcessOneMoveType,
     replayBuffer: ReplayBuffer,
     expectedBin: Bin,
     props: Pick<TrainProps, 'episodesPerEpoch' | 'stepsLimit'>,
 ) => {
     await asyncLoop(0, props.episodesPerEpoch, async () => {
-        const episode = await playEpisode(model, expectedBin, props.stepsLimit);
+        const episode = await playEpisode(
+            model,
+            processOneMove,
+            randomBoard(),
+            expectedBin,
+            props.stepsLimit,
+        );
         replayBuffer.push(episode);
     });
 };
 
 export const trainNEpoch = async (
     model: LayersModel,
+    processOneMove: ProcessOneMoveType,
     replayBuffer: ReplayBuffer,
     innerProps?: Partial<TrainProps>,
 ) => {
@@ -62,7 +62,7 @@ export const trainNEpoch = async (
     props.onTrainStart();
     for (const epoch of Array(props.epochs).keys()) {
         const expectedBin = ['Kk', 'Kp', 'Kc', 'Kb'];
-        await fillReplayBuffer(model, replayBuffer, expectedBin, props);
+        await fillReplayBuffer(model, processOneMove, replayBuffer, expectedBin, props);
         props.onReplayBufferEnd(epoch, replayBuffer.count());
 
         // train on replays

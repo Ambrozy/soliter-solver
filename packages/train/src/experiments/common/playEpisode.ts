@@ -1,33 +1,38 @@
-import { Bin, isLose, isWin, moveToString, randomBoard } from '../../game';
+import { Bin, Board, isLose, isWin, moveToString } from '../../game';
 import { asyncLoop, sample } from '../../utils';
-import { LayersModel } from '../common/tf';
-import { Episode } from '../common/types';
-import { processOneMove } from './processOneMove';
+import type { LayersModel } from './tf';
+import type { Episode, ProcessOneMoveType, SamplerType } from './types';
 
 export const playEpisode = async (
     model: LayersModel,
+    processOneMove: ProcessOneMoveType,
+    startBoard: Board,
     expectedBin: Bin,
     stepsLimit: number,
+    sampler: SamplerType = sample,
     verbose = false,
 ): Promise<Episode> => {
-    let board = randomBoard();
+    let board = startBoard;
+    const episode: Episode = [];
 
-    return await asyncLoop(stepsLimit, 0, (steps) => {
+    await asyncLoop(stepsLimit, 0, (steps) => {
         const { score, bestMove, nextBoard } = processOneMove(
             model,
+            episode,
             board,
             expectedBin,
             steps,
-            sample,
+            sampler,
         );
         const isWinCondition = isWin(board, expectedBin);
-        const isLoseCondition = isLose(board);
-        const result = {
+        const isLoseCondition = isLose(board) || score === 0;
+
+        episode.push({
             board,
             move: bestMove,
-            score,
+            score: isLoseCondition ? 0 : score,
             done: isWinCondition || isLoseCondition,
-        };
+        });
 
         if (verbose) {
             const currentStep = stepsLimit - steps;
@@ -41,10 +46,12 @@ export const playEpisode = async (
 
         board = nextBoard;
 
-        if (result.done) {
-            return Promise.reject(result);
+        if (episode.at(-1).done) {
+            return Promise.reject();
         }
 
-        return Promise.resolve(result);
+        return Promise.resolve();
     });
+
+    return episode;
 };

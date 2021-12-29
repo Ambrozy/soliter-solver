@@ -12,8 +12,9 @@ import {
     initUsage,
     drawReplayBuffer,
 } from './article';
-import { replays, stringsToEpisode } from './experiments/common';
-import { createModel, ReplayBuffer, trainNEpoch } from './experiments/segmentation';
+import { replays, stringsToEpisode, trainNEpoch } from './experiments/common';
+// import { createModel, ReplayBuffer, processOneMove } from './experiments/segmentation';
+import { createModel, ReplayBuffer, processOneMove } from './experiments/stepEvaluation';
 
 import './index.scss';
 
@@ -51,7 +52,7 @@ window.onload = async () => {
         model = loadedModel;
     });
     initEditor();
-    initUsage(model);
+    initUsage(model, processOneMove);
 
     // training
     document.querySelector('#train-model').addEventListener('click', async (event) => {
@@ -69,11 +70,7 @@ window.onload = async () => {
         setProgress(0);
 
         button.disabled = true;
-        model.compile({
-            loss: ['binaryCrossentropy', 'binaryCrossentropy'],
-            optimizer: 'adam',
-        });
-        await trainNEpoch(model, replayBuffer, {
+        await trainNEpoch(model, processOneMove, replayBuffer, {
             epochs,
             episodesPerEpoch: 1,
             epochsPerEpoch: 1,

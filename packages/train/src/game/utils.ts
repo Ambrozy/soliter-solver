@@ -107,7 +107,7 @@ export const moveToString = (board: Board, move: Move | typeof NONE_MOVE) => {
     } else if (isToBin) {
         toString = 'bin';
     } else {
-        toString = board[to[0]][Math.min(1, to[1] - 1)];
+        toString = board[Math.max(1, to[0] - 1)][to[1]];
     }
     if (!toString) {
         // eslint-disable-next-line quotes
