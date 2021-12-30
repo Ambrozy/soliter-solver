@@ -21,13 +21,23 @@ export const initUsage = (model: LayersModel, processOneMove: ProcessOneMoveType
             return;
         }
 
-        const history = await solveEpisode(
+        const { history, finalBin } = await solveEpisode(
             model,
             processOneMove,
             board,
             expectedBin,
             120,
+            true,
         );
-        resultContainer.innerHTML = 'Solved: ' + prettifyCards(history.join(', '));
+        const [historyStr, finalBinStr] = [
+            prettifyCards(history.join(', ')),
+            prettifyCards(finalBin.join(' ')),
+        ];
+
+        resultContainer.innerHTML = `
+            Final bin: ${finalBinStr}
+            <br/>
+            History: ${historyStr}
+        `;
     });
 };

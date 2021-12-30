@@ -8,17 +8,19 @@ export const scoreToProbabilities = (scores: number[], threshold = 0) => {
     return scores.map((score) => (score > threshold ? score / sumScore : 0));
 };
 export const force = (probabilities: number[]) => {
-    let maximum = 0;
-    let indexOfMaximum = 0;
+    const maximum = Math.max(...probabilities);
+    const theSameProbabilityIndexes = probabilities.reduce(
+        (indexes, probability, currentIndex) => {
+            if (probability >= maximum) {
+                indexes.push(currentIndex);
+            }
+            return indexes;
+        },
+        [],
+    );
+    const randomIndex = randomInteger(0, theSameProbabilityIndexes.length);
 
-    probabilities.forEach((probability, index) => {
-        if (probability > maximum) {
-            maximum = probability;
-            indexOfMaximum = index;
-        }
-    });
-
-    return indexOfMaximum;
+    return theSameProbabilityIndexes[randomIndex];
 };
 export const sample = (probabilities: number[]) => {
     const roll = Math.random();

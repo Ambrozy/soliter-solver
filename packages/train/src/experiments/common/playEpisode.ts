@@ -23,6 +23,7 @@ export const playEpisode = async (
             expectedBin,
             steps,
             sampler,
+            stepsLimit - steps,
         );
         const isWinCondition = isWin(board, expectedBin);
         const isLoseCondition = isLose(board) || score === 0;

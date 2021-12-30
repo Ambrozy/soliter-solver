@@ -1,6 +1,7 @@
 import { Bin, Board, Position, randomBoard, UNKNOWN_CARD } from '../../game';
 import { flattenBoard } from '../../utils/board';
 import type { Episode } from './types';
+import { ProcessOneMoveType } from './types';
 
 export const toOhe = (index: number, length: number) => {
     const ohe = new Float32Array(length);
@@ -72,3 +73,13 @@ export const positionToIndexMap = (position: Position) => {
 };
 
 export const getFinalScore = (episodes: Episode) => episodes.at(-1).score;
+
+export const getNoMovesReturn = (board: Board) =>
+    ({
+        score: 0,
+        bestMove: [
+            [0, 0],
+            [0, 0],
+        ],
+        nextBoard: board,
+    } as ReturnType<ProcessOneMoveType>);

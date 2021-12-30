@@ -6,7 +6,7 @@ export const asyncLoop = (
     const sign = Math.sign(end - start);
     let iteration = start;
 
-    const loop = (resolve: () => void, reject: () => void) => {
+    const loop = (resolve: () => void) => {
         setTimeout(async () => {
             if (sign > 0 ? iteration < end : iteration > end) {
                 try {
@@ -15,11 +15,11 @@ export const asyncLoop = (
                     if (error instanceof Error) {
                         throw error;
                     }
-                    return reject();
+                    return resolve();
                 }
 
                 iteration += sign;
-                loop(resolve, reject);
+                loop(resolve);
             } else {
                 resolve();
             }

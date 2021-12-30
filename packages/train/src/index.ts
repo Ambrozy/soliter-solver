@@ -14,7 +14,8 @@ import {
 } from './article';
 import { replays, stringsToEpisode, trainNEpoch } from './experiments/common';
 // import { createModel, ReplayBuffer, processOneMove } from './experiments/segmentation';
-import { createModel, ReplayBuffer, processOneMove } from './experiments/stepEvaluation';
+import { processOneMove } from './experiments/greedAlgorithm';
+import { createModel, ReplayBuffer } from './experiments/stepEvaluation';
 
 import './index.scss';
 
@@ -42,6 +43,14 @@ window.onload = async () => {
     replays.map((replay) => {
         replayBuffer.push(stringsToEpisode(replay.startBoard, replay.history));
     });
+    // await solveEpisode(
+    //     null,
+    //     getReplayProcessOneMove(replays[1]),
+    //     randomBoard(),
+    //     ['Kp', 'Kc', 'Kk', 'Kb'],
+    //     120,
+    //     true,
+    // );
     await drawReplayBuffer(replayBuffer);
     // await toggleBackend();
     await showModel(model);

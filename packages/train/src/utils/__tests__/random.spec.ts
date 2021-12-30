@@ -73,6 +73,12 @@ describe('random utils', () => {
         it('should return index of maximum', () => {
             expect(force([0.05, 0.17, 0.14, 0.19, 0.45])).toEqual(4);
         });
+
+        it('should return index of random maximum between the same values', () => {
+            jest.spyOn(global.Math, 'random').mockReturnValue(0.99);
+            expect(force([0.05, 0.17, 0.14, 0.19, 0.45, 0.45])).toEqual(5);
+            jest.spyOn(global.Math, 'random').mockRestore();
+        });
     });
 
     describe('sample', () => {

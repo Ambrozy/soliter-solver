@@ -16,10 +16,16 @@ export type ProcessOneMoveType = (
     bin: Bin,
     steps: number,
     sampler: SamplerType,
+    stepIndex: number,
 ) => {
     score: number;
     bestMove: Move;
     nextBoard: Board;
+};
+
+export type Replay = {
+    startBoard: string;
+    history: string;
 };
 
 export interface TrainLog {

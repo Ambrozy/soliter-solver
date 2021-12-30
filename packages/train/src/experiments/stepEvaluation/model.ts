@@ -73,7 +73,7 @@ export const createModel = () => {
         .apply(inputSteps);
 
     // solver
-    let command = tf.layers
+    const command = tf.layers
         .concatenate({ axis: -1, name: 'command_concatenate' })
         .apply([bin, steps] as Tensor[]);
     // command = tf.layers

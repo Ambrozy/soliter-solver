@@ -3,6 +3,7 @@ import { force } from '../../utils';
 import { playEpisode } from './playEpisode';
 import type { LayersModel } from './tf';
 import type { ProcessOneMoveType } from './types';
+import { getLastBinFromEpisode } from './utils';
 
 export const solveEpisode = async (
     model: LayersModel,
@@ -10,7 +11,11 @@ export const solveEpisode = async (
     startBoard: Board,
     expectedBin: Bin,
     stepsLimit: number,
-): Promise<string[]> => {
+    verbose = false,
+): Promise<{
+    history: string[];
+    finalBin: string[];
+}> => {
     const episode = await playEpisode(
         model,
         processOneMove,
@@ -18,7 +23,13 @@ export const solveEpisode = async (
         expectedBin,
         stepsLimit,
         force,
+        verbose,
     );
+    const finalBin = getLastBinFromEpisode(episode);
+    const history = episode.map((step) => moveToString(step.board, step.move));
 
-    return episode.map((step) => moveToString(step.board, step.move));
+    return {
+        history,
+        finalBin,
+    };
 };

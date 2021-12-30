@@ -101,7 +101,7 @@ export const isBinReached = (board: Board, expectedBin: Bin): boolean => {
             binDescription.some(
                 (cardDescription) =>
                     getSuite(expectedCard) === cardDescription.suite &&
-                    toCardNumber(expectedCard) >= cardDescription.number,
+                    toCardNumber(expectedCard) <= cardDescription.number,
             ),
         )
     );

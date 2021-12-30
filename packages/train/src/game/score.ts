@@ -36,5 +36,5 @@ export const getBoardScore = (board: Board) => {
         layoutScore += sumSeries(stackLength);
     }
 
-    return stackPossibleLength + 2 * binScore + layoutScore;
+    return stackPossibleLength + binScore + layoutScore;
 };

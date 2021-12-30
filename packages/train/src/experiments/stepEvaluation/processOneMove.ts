@@ -1,6 +1,12 @@
 import { getBoardScore, nextState, possibleMoves } from '../../game';
 import { scoreToProbabilities } from '../../utils';
-import { binShape, encodeBoard, encodeExpectedBin, xShape } from '../common';
+import {
+    binShape,
+    encodeBoard,
+    encodeExpectedBin,
+    getNoMovesReturn,
+    xShape,
+} from '../common';
 import { tf, Tensor } from '../common/tf';
 import { ProcessOneMoveType } from '../common/types';
 
@@ -49,12 +55,5 @@ export const processOneMove: ProcessOneMoveType = (
         };
     }
 
-    return {
-        score: 0,
-        bestMove: [
-            [0, 0],
-            [0, 0],
-        ],
-        nextBoard: board,
-    };
+    return getNoMovesReturn(board);
 };
