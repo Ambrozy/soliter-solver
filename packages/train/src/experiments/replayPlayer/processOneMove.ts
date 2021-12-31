@@ -1,4 +1,4 @@
-import { nextState } from '../../game';
+import { getBoardReward, nextState } from '../../game';
 import { getNoMovesReturn, stringsToEpisode } from '../common';
 import type { ProcessOneMoveType, Replay } from '../common/types';
 
@@ -12,10 +12,12 @@ export const getReplayProcessOneMove = (replay: Replay): ProcessOneMoveType => {
 
         const score = episode[stepIndex].score;
         const bestMove = episode[stepIndex].move;
-        const nextBoard = nextState(episode[stepIndex].board, bestMove);
+        const board = episode[stepIndex].board;
+        const nextBoard = nextState(board, bestMove);
 
         return {
             score,
+            reward: getBoardReward(board, nextBoard),
             bestMove,
             nextBoard,
         };

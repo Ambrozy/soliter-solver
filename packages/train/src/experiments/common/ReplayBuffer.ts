@@ -47,12 +47,12 @@ export class ReplayBuffer {
     push(episode: Episode) {
         if (episode.length > 0) {
             this._data.push(episode);
-            this._data.sort((a, b) => getFinalScore(b) - getFinalScore(a));
+            this._data.sort((a, b) => getFinalScore(b, -2) - getFinalScore(a, -2));
             this.length += episode.length;
         }
 
-        if (this._data.length > this.length) {
-            const sliceLength = this.props.leftEpisodesAfterOverflow || this.length;
+        if (this._data.length > this.props.length) {
+            const sliceLength = this.props.leftEpisodesAfterOverflow || this.props.length;
             this._data = this._data.slice(0, sliceLength);
             this.updateLength();
         }

@@ -5,6 +5,7 @@ import {
     DIAMONDS,
     DIAMONDS_INDEX,
     EMPTY,
+    getBoardReward,
     getBoardScore,
     getSuite,
     HEARTS,
@@ -107,12 +108,14 @@ export const stringsToEpisode = (startBoard: string, movesString: string) => {
         }
 
         const score = getBoardScore(board);
+        const reward = getBoardReward(prevBoard, board);
         const done = lastIndex === currentIndex;
 
         return {
             board: prevBoard,
             move,
             score,
+            reward,
             done,
         };
     });

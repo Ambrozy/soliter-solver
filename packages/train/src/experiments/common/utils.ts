@@ -1,4 +1,4 @@
-import { Bin, Board, Position, randomBoard, UNKNOWN_CARD } from '../../game';
+import { Bin, Board, nextState, Position, randomBoard, UNKNOWN_CARD } from '../../game';
 import { flattenBoard } from '../../utils/board';
 import type { Episode } from './types';
 import { ProcessOneMoveType } from './types';
@@ -44,6 +44,24 @@ export const removeIneffectiveSteps = (episode: Episode) =>
         return distilled;
     }, []);
 
+export const smoothEpisodeReward = (episode: Episode, gamma: number) => {
+    let r = 0;
+    for (let i = episode.length - 1; i >= 0; i--) {
+        r = episode[i].reward + gamma * r;
+        episode[i].reward = r;
+    }
+
+    return episode;
+};
+
+export const getPreviousEpisodeBoard = (episode: Episode, currentStep: number) =>
+    currentStep === 0 ? episode[currentStep].board : episode[currentStep - 1].board;
+
+export const getNextEpisodeBoard = (episode: Episode, currentStep: number) =>
+    currentStep === episode.length - 1
+        ? nextState(episode[currentStep].board, episode[currentStep].move)
+        : episode[currentStep + 1].board;
+
 export const getLastBinFromEpisode = (episode: Episode) =>
     episode.at(-1).board[0].slice(4);
 
@@ -72,11 +90,13 @@ export const positionToIndexMap = (position: Position) => {
     return indexMap;
 };
 
-export const getFinalScore = (episodes: Episode) => episodes.at(-1).score;
+export const getFinalScore = (episodes: Episode, at = -1): number =>
+    episodes.at(at).score;
 
 export const getNoMovesReturn = (board: Board) =>
     ({
         score: 0,
+        reward: -1,
         bestMove: [
             [0, 0],
             [0, 0],

@@ -16,7 +16,7 @@ export const playEpisode = async (
     const episode: Episode = [];
 
     await asyncLoop(stepsLimit, 0, (steps) => {
-        const { score, bestMove, nextBoard } = processOneMove(
+        const { score, reward, bestMove, nextBoard } = processOneMove(
             model,
             episode,
             board,
@@ -32,6 +32,7 @@ export const playEpisode = async (
             board,
             move: bestMove,
             score: isLoseCondition ? 0 : score,
+            reward,
             done: isWinCondition || isLoseCondition,
         });
 
@@ -41,7 +42,7 @@ export const playEpisode = async (
             const lose = isLoseCondition ? 'lose' : '';
             const moveString = moveToString(board, bestMove);
             console.log(
-                `[${currentStep}] Best move is ${moveString}, score is ${score}, ${win}${lose}`,
+                `[${currentStep}] Best move is ${moveString}, score is ${score}, reward is ${reward}, ${win}${lose}`,
             );
         }
 

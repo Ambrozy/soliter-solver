@@ -1,4 +1,4 @@
-import { Move, getBoardScore, nextState, Position } from '../../game';
+import { Move, getBoardScore, nextState, Position, getBoardReward } from '../../game';
 import { scoreToProbabilities } from '../../utils';
 import { binShape, encodeBoard, encodeExpectedBin, xShape } from '../common';
 import { tf, Tensor } from '../common/tf';
@@ -46,6 +46,7 @@ export const processOneMove: ProcessOneMoveType = (
 
     return {
         score: getBoardScore(nextBoard),
+        reward: getBoardReward(board, nextBoard),
         bestMove,
         nextBoard,
     };

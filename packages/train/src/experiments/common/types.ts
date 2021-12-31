@@ -5,6 +5,7 @@ export type Episode = Array<{
     board: Board;
     move: Move;
     score: number;
+    reward: number;
     done: boolean;
 }>;
 
@@ -19,6 +20,7 @@ export type ProcessOneMoveType = (
     stepIndex: number,
 ) => {
     score: number;
+    reward: number;
     bestMove: Move;
     nextBoard: Board;
 };

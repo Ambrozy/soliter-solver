@@ -1,4 +1,5 @@
 import { range } from '../utils';
+import { isLose } from './gameEnds';
 import {
     Board,
     CROSSES_INDEX,
@@ -10,13 +11,15 @@ import { getStackPossibleLength, isCompatible, toCardNumber } from './utils';
 
 const sumSeries = (n: number) => Math.round((n * (n + 1)) / 2);
 
+export const getBinScore = (board: Board) =>
+    sumSeries(toCardNumber(board[0][HEARTS_INDEX])) +
+    sumSeries(toCardNumber(board[0][CROSSES_INDEX])) +
+    sumSeries(toCardNumber(board[0][SPADES_INDEX])) +
+    sumSeries(toCardNumber(board[0][DIAMONDS_INDEX]));
+
 export const getBoardScore = (board: Board) => {
     const stackPossibleLength = getStackPossibleLength(board);
-    const binScore =
-        sumSeries(toCardNumber(board[0][HEARTS_INDEX])) +
-        sumSeries(toCardNumber(board[0][CROSSES_INDEX])) +
-        sumSeries(toCardNumber(board[0][SPADES_INDEX])) +
-        sumSeries(toCardNumber(board[0][DIAMONDS_INDEX]));
+    const binScore = getBinScore(board);
     let layoutScore = 0;
 
     for (const column of range(board[0].length)) {
@@ -37,4 +40,27 @@ export const getBoardScore = (board: Board) => {
     }
 
     return stackPossibleLength + binScore + layoutScore;
+};
+
+export const getBoardReward = (board: Board, nextBoard: Board) => {
+    if (isLose(nextBoard)) {
+        return -1;
+    }
+
+    const currentBinScore = getBinScore(board);
+    const nextBinScore = getBinScore(nextBoard);
+
+    return currentBinScore !== nextBinScore ? 1 : 0;
+};
+
+export const getBoardExtReward = (board: Board, nextBoard: Board) => {
+    if (isLose(nextBoard)) {
+        return -1;
+    }
+
+    const score = getBoardScore(board);
+    const nextScore = getBoardScore(nextBoard);
+    const sign = Math.sign(nextScore - score);
+
+    return sign * 0.2 + getBoardReward(board, nextBoard);
 };

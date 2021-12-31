@@ -1,5 +1,5 @@
 import type { Board, Move } from '../../game';
-import { getBoardScore, nextState, possibleMoves } from '../../game';
+import { getBoardReward, getBoardScore, nextState, possibleMoves } from '../../game';
 import { force } from '../../utils';
 import { ProcessOneMoveType } from '../common/types';
 import { getNoMovesReturn } from '../common';
@@ -69,9 +69,11 @@ export const processOneMove: ProcessOneMoveType = (_, __, board) => {
         const score = bestNode.score;
         const bestMove = bestNode.history[0];
         const nextBoard = nextState(board, bestMove);
+        const reward = getBoardReward(board, nextBoard);
 
         return {
             score,
+            reward,
             bestMove,
             nextBoard,
         };

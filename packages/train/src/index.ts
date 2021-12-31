@@ -14,16 +14,24 @@ import {
 } from './article';
 import { replays, stringsToEpisode, trainNEpoch } from './experiments/common';
 // import { createModel, ReplayBuffer, processOneMove } from './experiments/segmentation';
-import { processOneMove } from './experiments/greedAlgorithm';
-import { createModel, ReplayBuffer } from './experiments/stepEvaluation';
+// import { processOneMove } from './experiments/greedAlgorithm';
+// import { createModel, ReplayBuffer } from './experiments/stepEvaluationScore';
+import {
+    createModel,
+    ReplayBuffer,
+    processOneMove,
+} from './experiments/stepEvaluationReward';
 
 import './index.scss';
 
 let model = createModel();
 const replayBuffer = new ReplayBuffer({
-    length: 64,
+    length: 18,
     batchSize: 128,
+    leftEpisodesAfterOverflow: 17,
+    gamma: 0.99,
 });
+const epochs = 100;
 
 type ExtWindow = typeof window & {
     tf: typeof tf;
@@ -63,20 +71,20 @@ window.onload = async () => {
     initEditor();
     initUsage(model, processOneMove);
 
+    const progressTitle = document.querySelector('#train-progress-title');
+    const progressBar = document.querySelector('#train-progress-bar-inner');
+    const setProgress = (epoch: number) => {
+        progressTitle.innerHTML = `${epoch} of ${epochs}`;
+        (progressBar as HTMLDivElement).style.width = `${(100 * epoch) / epochs}%`;
+    };
+    setProgress(0);
+
     // training
     document.querySelector('#train-model').addEventListener('click', async (event) => {
         console.log('Train started');
 
         const button = event.currentTarget as HTMLButtonElement;
-        const epochs = 100;
         const status = document.querySelector('#train-status');
-        const progressTitle = document.querySelector('#train-progress-title');
-        const progressBar = document.querySelector('#train-progress-bar-inner');
-        const setProgress = (epoch: number) => {
-            progressTitle.innerHTML = `${epoch} of ${epochs}`;
-            (progressBar as HTMLDivElement).style.width = `${(100 * epoch) / epochs}%`;
-        };
-        setProgress(0);
 
         button.disabled = true;
         await trainNEpoch(model, processOneMove, replayBuffer, {

@@ -1,12 +1,6 @@
-import { getBoardScore, nextState, possibleMoves } from '../../game';
+import { getBoardReward, getBoardScore, nextState, possibleMoves } from '../../game';
 import { scoreToProbabilities } from '../../utils';
-import {
-    binShape,
-    encodeBoard,
-    encodeExpectedBin,
-    getNoMovesReturn,
-    xShape,
-} from '../common';
+import { encodeBoard, getNoMovesReturn, xShape } from '../common';
 import { tf, Tensor } from '../common/tf';
 import { ProcessOneMoveType } from '../common/types';
 
@@ -14,8 +8,8 @@ export const processOneMove: ProcessOneMoveType = (
     model,
     episode,
     board,
-    bin,
-    steps,
+    _,
+    __,
     sampler,
 ) => {
     const moves = possibleMoves(board);
@@ -25,24 +19,18 @@ export const processOneMove: ProcessOneMoveType = (
             const moveCount = moves.length;
             const previousBoard = episode.length > 1 ? episode.at(-2).board : board;
             const boardsOhe = [encodeBoard(previousBoard), encodeBoard(board)];
-            const binOhe = encodeExpectedBin(bin);
 
             const boards = moves.map((move) => [
                 boardsOhe[0],
                 boardsOhe[1],
                 encodeBoard(nextState(board, move)),
             ]);
-            const bins = moves.map(() => binOhe);
-            const stepLimits = moves.map(() => steps);
 
-            const boardTensor = tf.tensor(boards, [moveCount, 3, ...xShape], 'float32');
-            const binTensor = tf.tensor(bins, [moveCount, ...binShape], 'float32');
-            const stepsTensor = tf.tensor(stepLimits, [moveCount, 1], 'float32');
-            const batch = [boardTensor, binTensor, stepsTensor];
+            const batch = tf.tensor(boards, [moveCount, 3, ...xShape], 'float32');
 
             const predictions = model.predict(batch) as Tensor;
             const scores = Array.from(predictions.dataSync()) as number[];
-            const moveIndex = sampler(scoreToProbabilities(scores));
+            const moveIndex = sampler(scoreToProbabilities(scores, 0.5));
 
             return moves[moveIndex];
         });
@@ -50,6 +38,7 @@ export const processOneMove: ProcessOneMoveType = (
 
         return {
             score: getBoardScore(nextBoard),
+            reward: getBoardReward(board, nextBoard),
             bestMove,
             nextBoard,
         };
