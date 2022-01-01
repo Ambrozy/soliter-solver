@@ -1,6 +1,8 @@
 from .constants import BIN_INDEXES, HEARTS, DIAMONDS, NONE_MOVE, PLACE_INDEXES, EMPTY, DECK
 from copy import deepcopy
 
+from .random_board import randomBoard
+
 
 def getSuite(card):
     if len(card):
@@ -127,3 +129,25 @@ def moveToString(board, move):
         toString = "''"
 
     return f'{fromString} {toString}'
+
+def flattenBoard(board):
+    flatten_board = list()
+    for level in board:
+        flatten_board.extend(level)
+    return flatten_board
+
+def isBoardValid(board):
+    randomFlattenedBoard = flattenBoard(randomBoard())
+    randomFlattenedBoard.sort()
+    if type(board) is list and type(board[0]) is list and len(board[0]) == 8:
+        flattenedBoard = flattenBoard(board)
+        flattenedBoard.sort()
+
+        def map_func(item):
+            index, card = item
+            return card == randomFlattenedBoard[index]
+
+        return all(map(map_func, enumerate(flattenedBoard)))
+
+    return False
+

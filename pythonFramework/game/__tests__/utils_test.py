@@ -1,6 +1,8 @@
 from unittest import TestCase
+
+from pythonFramework.game.random_board import randomBoard
 from pythonFramework.game.utils import getSuite, toCardNumber, isRed, isCompatible, isCompatibleBin, getLeftSpace, \
-    getStackPossibleLength, getLastCards, getCardStackLength, getAt, copyBoard, isValidCard
+    getStackPossibleLength, getLastCards, getCardStackLength, getAt, copyBoard, isValidCard, flattenBoard, isBoardValid
 
 
 def test_getSuite():
@@ -148,3 +150,15 @@ def test_isValidCard():
     assert isValidCard('Ac') is True, 'should return true for correct cards'
     assert isValidCard('Ah') is False, 'should return false for incorrect cards'
     assert isValidCard('Yc') is False, 'should return false for incorrect cards'
+
+def test_flattenBoard():
+    board = [
+        ['Qc', '', '3k', '', '', '', '', '10b'],
+        ['Kk', '', '2c', '3p', '9c', '4k', '6c', '9b'],
+    ]
+    flatten = ['Qc', '', '3k', '', '', '', '', '10b', 'Kk', '', '2c', '3p', '9c', '4k', '6c', '9b']
+    TestCase().assertEquals(flattenBoard(board), flatten, 'should flatten board')
+
+def test_isBoardValid():
+    board = randomBoard()
+    assert isBoardValid(board) is True, 'should return true'
