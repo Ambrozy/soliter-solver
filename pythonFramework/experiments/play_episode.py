@@ -14,7 +14,7 @@ def playEpisode(
     board = startBoard
     episode = list()
 
-    for steps in range(stepsLimit, 0):
+    for steps in range(stepsLimit, 0, -1):
         ret = processOneMove(
             model,
             episode,

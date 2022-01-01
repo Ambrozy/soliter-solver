@@ -24,7 +24,7 @@ def getBoardScore(board):
     for column in range(len(board[0])):
         stackLength = 0
         lastCard = getAt(board, [-1, column])
-        for level in range(len(board) - 2, 0):
+        for level in range(len(board) - 2, 0, -1):
             card = getAt(board, [level, column])
 
             if card != EMPTY and isCompatible(card, lastCard):
