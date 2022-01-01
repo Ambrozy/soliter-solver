@@ -45,7 +45,7 @@ def trainNEpoch(
                 randomBoard(),
                 expectedBin,
                 stepsLimit,
-                smaple,
+                sample,
             )
             replayBuffer.push(episode)
 
