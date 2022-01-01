@@ -69,7 +69,7 @@ export const getStackPossibleLength = (board: Board, toEmptyColumn?: boolean) =>
     return (leftSpace + 1) * (1 + emptyColumns - Number(Boolean(toEmptyColumn)));
 };
 export const copyBoard = (board: Board) => board.map((level) => [...level]);
-export const isValidCard = (card: string) => card === '' || DECK.includes(card);
+export const isValidCard = (card: string) => card === EMPTY || DECK.includes(card);
 export const getCardStackLength = (board: Board, from: Position) => {
     const currentPosition = [...from] as Position;
     let currentCard = getAt(board, currentPosition);

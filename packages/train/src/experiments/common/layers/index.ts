@@ -4,4 +4,6 @@ export * from './LambdaLayer';
 export * from './MLP';
 export * from './MixerLayer';
 export * from './mixerPipeline';
+export * from './MultiHeadAttention';
+export * from './Transformer';
 export * from './Transpose';

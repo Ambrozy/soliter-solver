@@ -31,7 +31,7 @@ const replayBuffer = new ReplayBuffer({
     leftEpisodesAfterOverflow: 17,
     gamma: 0.99,
 });
-const epochs = 100;
+const epochs = 20;
 
 type ExtWindow = typeof window & {
     tf: typeof tf;

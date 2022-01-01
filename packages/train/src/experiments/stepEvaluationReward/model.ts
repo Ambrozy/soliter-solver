@@ -3,9 +3,13 @@ import {
     ActivationIdentifier,
     ContainerArgs,
     LayerOutput,
+    Shape,
     Tensor,
     tf,
 } from '../common/tf';
+import { Transformer } from '../common/layers';
+import { ConcatPositionEncoding } from '../common/layers/ConcatPositionEncoding';
+import { range } from '../../utils';
 
 const dense = (
     x: LayerOutput,
@@ -13,11 +17,6 @@ const dense = (
     name: string,
     activation: ActivationIdentifier = 'relu',
 ) => tf.layers.dense({ units, activation, name }).apply(x);
-
-const residualBlock = (x: LayerOutput, units: number, name: string) => {
-    const y = dense(x, units, `${name}_dense`);
-    return tf.layers.add({ name: `${name}_add` }).apply([y, x] as Tensor[]);
-};
 
 const denseSequence = (x: LayerOutput, dims: number[], name: string, block = dense) => {
     let out = x;
@@ -28,6 +27,28 @@ const denseSequence = (x: LayerOutput, dims: number[], name: string, block = den
 
     return out;
 };
+
+class ConcatBoards extends tf.layers.Layer {
+    computeOutputShape(inputShape: Shape): Shape {
+        const [b, boardInSequence, ...rest] = inputShape;
+        const outShape = [b, ...rest];
+        outShape[outShape.length - 1] = inputShape.at(-1) * boardInSequence;
+        return outShape;
+    }
+
+    call(x: Tensor) {
+        return tf.tidy(() => {
+            const inX = Array.isArray(x) ? x[0] : x;
+            const [, boardInSequence] = inX.shape;
+            const boards = tf.split(inX, boardInSequence, 1);
+            return tf.concat(boards, -1);
+        });
+    }
+
+    static get className() {
+        return 'ConcatBoards';
+    }
+}
 
 export const createModel = () => {
     const [inputShape, boardInSequence, embeddingDim] = [xShape, 3, 3];
@@ -47,19 +68,27 @@ export const createModel = () => {
         })
         .apply(inputBoards);
 
+    board = new ConcatBoards({ name: 'concat_boards' }).apply(board);
+
     // perception
-    board = tf.layers
-        .timeDistributed({
-            layer: tf.layers.flatten({ name: 'perception_flatten' }),
-        })
-        .apply(board);
-    board = dense(board, 128, 'perception_dense');
-    board = denseSequence(board, [128, 128, 128], 'perception_residual', residualBlock);
-    board = tf.layers.flatten({ name: 'perception_time_flatten' }).apply(board);
+    board = new ConcatPositionEncoding({ dim: 12, name: 'concat_position' }).apply(board);
+    let query = board;
+    for (const i of range(1)) {
+        [query] = new Transformer({
+            heads: 4,
+            headDim: 64,
+            denseDim: 64,
+            attentionDropout: 0.1,
+            denseDropout: 0.1,
+            name: `perception_transformer_${i}`,
+        }).apply([query, board] as Tensor[]) as Tensor[];
+    }
 
     // solver
-    board = denseSequence(board, [128, 128, 64, 32], 'solver_dense', dense);
-    // const output = dense(board, 1, 'solver_output', 'sigmoid');
+    // board = tf.layers.globalMaxPool1d({ name: 'solver_max_pool' }).apply(query);
+    board = dense(query, 1, 'solver_dense');
+    board = tf.layers.flatten({ name: 'solver_flatten' }).apply(board);
+    board = denseSequence(board, [64, 32], 'solver_dense', dense);
     const output = dense(board, 1, 'solver_output', 'linear');
 
     const model = tf.model({
@@ -70,7 +99,6 @@ export const createModel = () => {
 
     model.compile({
         loss: 'meanSquaredError',
-        // loss: (yTrue: Tensor, yPred: Tensor) => tf.log(yPred).mul(-1).mul(yTrue), // binaryCrossentropy
         optimizer: 'adam',
     });
 

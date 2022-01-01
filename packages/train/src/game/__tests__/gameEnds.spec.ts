@@ -87,13 +87,12 @@ describe('gameEnds', () => {
         it('should return true when bin reached', () => {
             expect(isBinReached(board, ['Qc', 'Qk', 'Jp', '9b'])).toBe(true);
             expect(isBinReached(board, ['9b', 'Qc', UNKNOWN_CARD, 'Jp'])).toBe(true);
-            expect(isBinReached(board, ['Kc', 'Kk', 'Kp', 'Kb'])).toBe(true);
-            expect(isBinReached(board, [UNKNOWN_CARD, 'Kp', 'Kk', 'Kb'])).toBe(true);
-            expect(isBinReached(board, ['Kp', UNKNOWN_CARD, UNKNOWN_CARD, 'Kb'])).toBe(
+            expect(isBinReached(board, [UNKNOWN_CARD, 'Qk', '10p', '9b'])).toBe(true);
+            expect(isBinReached(board, ['10p', UNKNOWN_CARD, UNKNOWN_CARD, '2b'])).toBe(
                 true,
             );
             expect(
-                isBinReached(board, [UNKNOWN_CARD, UNKNOWN_CARD, 'Kp', UNKNOWN_CARD]),
+                isBinReached(board, [UNKNOWN_CARD, UNKNOWN_CARD, '8p', UNKNOWN_CARD]),
             ).toBe(true);
             expect(
                 isBinReached(board, [
@@ -112,7 +111,7 @@ describe('gameEnds', () => {
                 false,
             );
             expect(
-                isBinReached(board, [UNKNOWN_CARD, UNKNOWN_CARD, '10p', UNKNOWN_CARD]),
+                isBinReached(board, [UNKNOWN_CARD, UNKNOWN_CARD, 'Qp', UNKNOWN_CARD]),
             ).toBe(false);
         });
     });
