@@ -12,8 +12,8 @@ def noopLog(epoch, log):
     pass
 
 
-def smaple(probs):
-    return np.random.choice(1, probs)
+def sample(probs):
+    return np.random.choice(np.arange(probs.size), p=probs)
 
 
 def trainNEpoch(
