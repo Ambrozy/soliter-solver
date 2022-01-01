@@ -21,7 +21,7 @@ class ReplayBuffer:
     def push(self, episode):
         if len(episode) > 0:
             self._data.append(episode)
-            self._data.sort(key=lambda x: getFinalScore(x, -2))
+            self._data.sort(key=lambda x: getFinalScore(x, -2), reverse=True)
             self.length += len(episode)
 
         if len(self._data) > self.episodeLength:
