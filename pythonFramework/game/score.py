@@ -56,4 +56,4 @@ def getBoardExtReward(board, nextBoard):
     nextScore = getBoardScore(nextBoard)
     sign = math.copysign(1, nextScore - score)
 
-    return sign * 0.2 + getBoardReward(board, nextBoard)
+    return sign * 0.1 + getBoardReward(board, nextBoard)
